@@ -1,8 +1,7 @@
 ﻿using CryptoWalletApi.Data;
-using CryptoWalletApi.Data.DbModels;
-using Microsoft.AspNetCore.Http;
+using CryptoWalletApi.Services;
+using CryptoWalletApi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CryptoWalletApi.Controllers
 {
@@ -10,27 +9,35 @@ namespace CryptoWalletApi.Controllers
     [ApiController]
     public class CoinsController : ControllerBase
     {
-        private readonly DatabaseContext _DbContext;
+        private DatabaseManager _dbManager;
         public CoinsController(DatabaseContext context)
         {
-            _DbContext = context;
+            _dbManager = new DatabaseManager(context);
         }
 
         // GET: api/coins
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CoinModel>>> GetCoins()
+        public async Task<ActionResult<IEnumerable<CoinViewModel>>> GetCoins()
         {
-            return await _DbContext.Coins.ToListAsync();
+            if(_dbManager is null)
+                return BadRequest(); //log error
+            
+            var coins = await _dbManager.GetOwnedCoinsAsync();
+            
+            if(coins is null)
+                return NoContent(); //log error
+
+            return Ok(coins);
         }
 
-        // POST: api/coins
-        [HttpPost]
-        public async Task<ActionResult<CoinModel>> PostCoin(CoinModel coin)
-        {
-            _DbContext.Coins.Add(coin);
-            await _DbContext.SaveChangesAsync();
+        //// POST: api/coins
+        //[HttpPost]
+        //public async Task<ActionResult<CoinModel>> PostCoin(CoinModel coin)
+        //{
+        //    _DbContext.Coins.Add(coin);
+        //    await _DbContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetCoins), new { id = coin.Id }, coin);
-        }
+        //    return CreatedAtAction(nameof(GetCoins), new { id = coin.Id }, coin);
+        //}
     }
 }

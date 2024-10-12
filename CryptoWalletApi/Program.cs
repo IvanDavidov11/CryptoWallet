@@ -13,12 +13,14 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact",
-        builder => builder.WithOrigins("http://localhost:3000") // Change this to your React app's URL
+        builder => builder.WithOrigins("http://localhost:3000")
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
 
 var app = builder.Build();
+
+app.UseCors("AllowReact");
 
 // Configure the HTTP request pipeline.
 

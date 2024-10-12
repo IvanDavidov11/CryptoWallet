@@ -1,13 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CryptoWalletApi.Data;
+using CryptoWalletApi.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace CryptoWalletApi.ViewModels
 {
-    public class CoinsViewModel
+    public class CoinViewModel : ICoin
     {
         [Required]
         public int Id { get; set; }
 
         [Required]
+        [MaxLength(DataConstants.CoinNameLengthMaximum)]
         public string Name { get; set; }
 
         [Required]

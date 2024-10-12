@@ -23,5 +23,22 @@ namespace CryptoWalletApi.Services
                 Name = coin.Name,
             }).ToListAsync();
         }
+
+        public bool DbHasCoins()
+        {
+            return _dbContext.Coins.Count() > 0;
+        }
+
+        public async Task<bool> SeedDbWithCoins(IFormFile file)
+        {
+            List<Data.DbModels.CoinModel> allCoins =await FileReaderAndParser.MapFileToCoinDbModels(file);
+            if (allCoins == null || allCoins.Count == 0)
+                return false;
+
+            await _dbContext.AddRangeAsync(allCoins);
+            await _dbContext.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

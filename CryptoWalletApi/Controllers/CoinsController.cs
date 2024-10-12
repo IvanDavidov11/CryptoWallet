@@ -2,6 +2,7 @@
 using CryptoWalletApi.Services;
 using CryptoWalletApi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace CryptoWalletApi.Controllers
 {
@@ -30,14 +31,25 @@ namespace CryptoWalletApi.Controllers
             return Ok(coins);
         }
 
-        //// POST: api/coins
-        //[HttpPost]
-        //public async Task<ActionResult<CoinModel>> PostCoin(CoinModel coin)
-        //{
-        //    _DbContext.Coins.Add(coin);
-        //    await _DbContext.SaveChangesAsync();
+        [HttpGet("has-coins")]
+        public ActionResult<bool> HasCoins()
+        {
+            if (_dbManager is null)
+                return BadRequest(); //log error
 
-        //    return CreatedAtAction(nameof(GetCoins), new { id = coin.Id }, coin);
-        //}
+            return Ok(_dbManager.DbHasCoins());
+        }
+
+        [HttpPost("upload")]
+        public async Task<ActionResult> UploadPortfolio(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
+
+            var result = await _dbManager.SeedDbWithCoins(file);
+            return result ? Ok(result) : NoContent();
+        }
     }
 }

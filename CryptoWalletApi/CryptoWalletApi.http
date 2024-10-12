@@ -1,4 +1,4 @@
-@CryptoWalletApi_HostAddress = http://localhost:5033
+@CryptoWalletApi_HostAddress = http://localhost:5033/api
 
 GET {{CryptoWalletApi_HostAddress}}/coins
 Accept: application/json

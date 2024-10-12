@@ -10,5 +10,7 @@
         public const int DecimalPrecision_DecimalPlaces = 4;
 
         public const int CoinNameLengthMaximum = 100;
+
+        public const string FrontendClientUrl = @"http:/localhost:3000";
     }
 }

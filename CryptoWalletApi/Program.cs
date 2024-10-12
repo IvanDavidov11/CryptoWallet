@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
@@ -13,7 +11,7 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact",
-        builder => builder.WithOrigins("http://localhost:3000")
+        builder => builder.WithOrigins(DataConstants.FrontendClientUrl)
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
@@ -21,8 +19,6 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseCors("AllowReact");
-
-// Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
 

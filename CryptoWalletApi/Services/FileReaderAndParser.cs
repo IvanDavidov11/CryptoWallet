@@ -4,9 +4,9 @@ namespace CryptoWalletApi.Services
 {
     public static class FileReaderAndParser
     {
-        private static readonly char[] separators = new[] { '|', ','};
+        private static readonly char[] separators = new[] { '|', ',' };
 
-        public async static Task<List<string>> GetFileAsStringCollection (IFormFile file)
+        public async static Task<List<string>> GetFileAsStringCollection(IFormFile file)
         {
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
@@ -18,7 +18,7 @@ namespace CryptoWalletApi.Services
             }
         }
 
-        public static async Task<List<CoinModel>> MapFileToCoinDbModels (IFormFile file)
+        public static async Task<List<CoinModel>> MapFileToCoinDbModels(IFormFile file)
         {
             var allCoinsAsStrings = await GetFileAsStringCollection(file);
             if (allCoinsAsStrings == null)
@@ -33,16 +33,21 @@ namespace CryptoWalletApi.Services
                 if (coin.Length != 3)
                     continue; //add logic for bad coins
 
-                var coinBoughtPrice = decimal.Parse(coin[0]);
-                var coinName = coin[1];
-                var coinAmount = decimal.Parse(coin[2]);
-                
-                allCoins.Add(new CoinModel()
+                if (decimal.TryParse(coin[0], out decimal coinBoughtPrice) &&
+                    decimal.TryParse(coin[2], out decimal coinAmount))
                 {
-                    Name = coinName,
-                    Amount = coinAmount,
-                    BuyPrice = coinBoughtPrice,
-                });
+                    var coinName = coin[1];
+                    allCoins.Add(new CoinModel()
+                    {
+                        Name = coinName,
+                        Amount = coinAmount,
+                        BuyPrice = coinBoughtPrice,
+                    });
+                }
+                else
+                {
+                    continue; //add logic for bad coins
+                }
             }
 
             return allCoins;

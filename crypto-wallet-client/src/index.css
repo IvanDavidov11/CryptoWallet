@@ -10,8 +10,22 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+  color:white;
 }
 
 .coin {
   font-size:20px;
+}
+
+.app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column; /* Stacks children vertically */
+  gap: 10px; /* Space between each element */
 }

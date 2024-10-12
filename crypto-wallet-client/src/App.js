@@ -1,23 +1,50 @@
 import { useEffect, useState } from 'react';
 import Coin from './Coin';
+import Upload from './Upload';
 
 function App() {
-  const API_Url = "https://localhost:7038/api/coins"
+  const main_ApiUrl = "https://localhost:7038/api/coins";
+  const hasCoins_ApiUrl = "https://localhost:7038/api/coins/has-coins";
+  const [hasCoins, setHasCoins] = useState(false);
   const [coins, setCoins] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [fileUploaded, setFileUploaded] = useState(false);
 
+  useEffect(() => {
+    if (hasCoins) {
+      const fetchCoins = async () => {
+        try {
+          const response = await fetch(main_ApiUrl);
+
+          if (!response.ok) throw Error('Did not receive expected data');
+
+          const listCoins = await response.json();
+          console.log(`FetchCoins executed: ${listCoins}`);
+          setCoins(listCoins);
+        }
+        catch (err) {
+          console.log(err);
+        }
+        finally {
+          setIsLoading(false);
+        }
+      }
+
+      fetchCoins();
+    }
+  }, [hasCoins]);
 
   useEffect(() => {
 
-    const fetchItems = async () => {
+    const checkIfHasCoins = async () => {
       try {
-        const response = await fetch(API_Url);
+        const response = await fetch(hasCoins_ApiUrl);
 
         if (!response.ok) throw Error('Did not receive expected data');
 
-        const listCoins = await response.json();
-        console.log(listCoins);
-        setCoins(listCoins);
+        const hasCoinsValue = await response.json();
+        console.log(`HasCoins executed: ${hasCoinsValue}`);
+        setHasCoins(hasCoinsValue);
       }
       catch (err) {
         console.log(err);
@@ -26,18 +53,22 @@ function App() {
         setIsLoading(false);
       }
     }
-    fetchItems();
-  }, [])
+    checkIfHasCoins();
+  }, [fileUploaded]);
+
+  const handleFileUpload = (file) => {
+    console.log('File uploaded:', file);
+    setFileUploaded(true);
+  };
 
   return (
-    <div className="App">
-      {isLoading ? (
-        <p>Currently loading</p>) : (
+    <div className="app">
+      {!hasCoins ? (
+        <Upload onFileUpload={handleFileUpload} />
+      ) : (
         <ul>
           {coins.map((coin) =>
-            <Coin
-              key={coin.id}
-              coin={coin} />
+            <Coin key={coin.id} coin={coin} />
           )}
         </ul>
       )}

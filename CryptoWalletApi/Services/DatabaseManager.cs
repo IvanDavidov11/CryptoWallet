@@ -40,5 +40,13 @@ namespace CryptoWalletApi.Services
 
             return true;
         }
+
+        public async Task<bool> ClearCoinsFromDb()
+        {
+            _dbContext.Coins.RemoveRange(_dbContext.Coins);
+            await _dbContext.SaveChangesAsync();
+
+            return !DbHasCoins(); // if db has no coins, the removal was successful
+        }
     }
 }

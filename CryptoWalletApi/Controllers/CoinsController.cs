@@ -51,5 +51,12 @@ namespace CryptoWalletApi.Controllers
             var result = await _dbManager.SeedDbWithCoins(file);
             return result ? Ok(result) : NoContent();
         }
+
+        [HttpDelete("clear")]
+        public async Task<ActionResult> ClearPortfolio()
+        {
+            var result = await _dbManager.ClearCoinsFromDb();
+            return result ? Ok() : BadRequest();
+        }
     }
 }

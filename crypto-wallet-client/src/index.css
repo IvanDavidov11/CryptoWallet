@@ -1,20 +1,20 @@
 body {
-  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: black;
+  color: white;
+
+  margin: 0;
+  background: radial-gradient(circle at 500px -400px, rgba(82, 110, 235, 0.699), transparent 40%),
+    #000;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-  color:white;
-}
-
-.coin {
-  font-size:20px;
 }
 
 .app {
@@ -22,10 +22,54 @@ code {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  width: 90vw;
 }
 
 .upload-form {
   display: flex;
-  flex-direction: column; /* Stacks children vertically */
-  gap: 10px; /* Space between each element */
+  flex-direction: column;
+  gap: 10px;
+}
+
+.loadedPortfolio {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: left;
+}
+
+.table_component {
+  overflow: auto;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.table_component table {
+  border: 1px solid #dededf;
+  height: 100%;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 1px;
+  text-align: center;
+}
+
+.table_component caption {
+  caption-side: top;
+  text-align: left;
+}
+
+.table_component th {
+  border: 1px solid #dededf;
+  background-color: #eceff1;
+  color: #000000;
+  padding: 5px;
+}
+
+.table_component td {
+  border: 1px solid #dededf;
+  background-color: #ffffff;
+  color: #000000;
+  padding: 5px;
+  width: 100%;
 }

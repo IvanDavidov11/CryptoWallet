@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import Coin from './Coin';
-import Upload from './Upload';
+import EmptyPortfolio from './EmptyPortfolio/EmptyPortfolio';
+import LoadedPortfolio from './LoadedPortfolio/LoadedPortfolio';
 
 function App() {
   const main_ApiUrl = "https://localhost:7038/api/coins";
@@ -64,13 +64,9 @@ function App() {
   return (
     <div className="app">
       {!hasCoins ? (
-        <Upload onFileUpload={handleFileUpload} />
+        <EmptyPortfolio onFileUpload={handleFileUpload} />
       ) : (
-        <ul>
-          {coins.map((coin) =>
-            <Coin key={coin.id} coin={coin} />
-          )}
-        </ul>
+        <LoadedPortfolio coins={coins} setFileUploaded={setFileUploaded}/>
       )}
     </div>
   );

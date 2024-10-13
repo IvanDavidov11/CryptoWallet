@@ -21,12 +21,12 @@ namespace CryptoWalletApi.Controllers
         public async Task<ActionResult<IEnumerable<CoinViewModel>>> GetCoins()
         {
             if(_dbManager is null)
-                return BadRequest(); //log error
+                return BadRequest(); // log error
             
             var coins = await _dbManager.GetOwnedCoinsAsync();
             
             if(coins is null)
-                return NoContent(); //log error
+                return NoContent(); // log error
 
             return Ok(coins);
         }
@@ -35,7 +35,7 @@ namespace CryptoWalletApi.Controllers
         public ActionResult<bool> HasCoins()
         {
             if (_dbManager is null)
-                return BadRequest(); //log error
+                return BadRequest(); // log error
 
             return Ok(_dbManager.DbHasCoins());
         }

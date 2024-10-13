@@ -31,12 +31,12 @@ namespace CryptoWalletApi.Services
                 string[] coin = coinInfo.Split(separators);
 
                 if (coin.Length != 3)
-                    continue; //add logic for bad coins
+                    continue; // add logic for bad coins
 
                 if (decimal.TryParse(coin[0], out decimal coinBoughtPrice) &&
                     decimal.TryParse(coin[2], out decimal coinAmount))
                 {
-                    var coinName = coin[1];
+                    var coinName = coin[1]; // add check with crypto api if coin exists
                     allCoins.Add(new CoinModel()
                     {
                         Name = coinName,
@@ -46,7 +46,7 @@ namespace CryptoWalletApi.Services
                 }
                 else
                 {
-                    continue; //add logic for bad coins
+                    continue; // add logic for bad coins
                 }
             }
 

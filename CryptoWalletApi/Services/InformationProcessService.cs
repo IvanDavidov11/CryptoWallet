@@ -35,5 +35,19 @@ namespace CryptoWalletApi.Services
             return checkedCoins;
         }
 
+        public async Task<decimal> CalculateInitialPortfolioValue(DatabaseManager dbManger)
+        {
+            var allCoins = await dbManger.GetOwnedCoinsAsync();
+
+            decimal initialValue = 0;
+
+            foreach (var coin in allCoins)
+            {
+                initialValue += (coin.Amount * coin.BuyPrice);
+            }
+
+            return initialValue;
+        }
+
     }
 }

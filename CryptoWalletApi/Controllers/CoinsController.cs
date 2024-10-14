@@ -13,6 +13,7 @@ namespace CryptoWalletApi.Controllers
     {
         private DatabaseManager _dbManager;
         private InformationProcessService _informationProcessService = new();
+        private ViewModelManager _viewModelManager = new();
         public CoinsController(DatabaseContext context)
         {
             _dbManager = new DatabaseManager(context);
@@ -25,7 +26,7 @@ namespace CryptoWalletApi.Controllers
             if (_dbManager is null)
                 return BadRequest(); // log error
 
-            var coins = await _dbManager.GetOwnedCoinsAsync();
+            var coins = await _viewModelManager.GenerateCoinViewModelsAsync(_dbManager);
 
             if (coins is null)
                 return NoContent(); // log error
@@ -50,7 +51,7 @@ namespace CryptoWalletApi.Controllers
                 return NoContent();
             }
 
-            CheckedCoinsDTO checkedCoins = await _informationProcessService.ProcessCoinFile(file);
+            CheckedCoinsDTO checkedCoins = await _informationProcessService.ProcessCoinFileAsync(file);
 
             if (checkedCoins.BadCoins.Count > 0)
             {

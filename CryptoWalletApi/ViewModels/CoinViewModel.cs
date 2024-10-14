@@ -21,5 +21,7 @@ namespace CryptoWalletApi.ViewModels
 
         [Required] // is used to get data from coinlore api.
         public string CoinLoreId { get; set; }
+
+        public string? PercentageChange { get; set; }
     }
 }

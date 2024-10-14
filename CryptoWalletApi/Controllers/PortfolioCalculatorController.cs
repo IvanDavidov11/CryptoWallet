@@ -19,7 +19,7 @@ namespace CryptoWalletApi.Controllers
         [HttpGet("initial")]
         public async Task<ActionResult> CalculateInitialPortfolioValue()
         {
-            decimal initialValue = await _infoProcessService.CalculateInitialPortfolioValue(_dbManager);
+            decimal initialValue = await _infoProcessService.CalculateInitialPortfolioValueAsync(_dbManager);
 
             return Ok(initialValue);
         }

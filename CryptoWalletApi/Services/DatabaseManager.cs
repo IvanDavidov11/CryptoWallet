@@ -14,16 +14,9 @@ namespace CryptoWalletApi.Services
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<CoinViewModel>> GetOwnedCoinsAsync()
+        public async Task<IEnumerable<CoinModel>> GetOwnedCoinsAsync()
         {
-            return await _dbContext.Coins.Select(coin => new CoinViewModel()
-            {
-                Id = coin.Id,
-                Amount = coin.Amount,
-                BuyPrice = coin.BuyPrice,
-                Name = coin.Name,
-                CoinLoreId = coin.CoinLoreId
-            }).ToListAsync();
+            return await _dbContext.Coins.ToListAsync();
         }
 
         public bool DbHasCoins()

@@ -12,8 +12,8 @@ const InitialPortfolioValue = () => {
     
               if (!response.ok) throw Error('Did not receive expected data');
     
-              const initialValueInText = await response.json();
-              setInitialValue(parseFloat(initialValueInText));
+              const initialValueJson = await response.json();
+              setInitialValue(parseFloat(initialValueJson));
             }
             catch (err) {
               console.log(err);

@@ -46,16 +46,19 @@ namespace CryptoWalletApi.Services
             {
                 List<CoinLoreCoinDTO> allApiCoins = await GetAllCoinsFromApi(response);
 
-                var apiCoinNames = new HashSet<string>(allApiCoins.Select(c => c.Name), StringComparer.OrdinalIgnoreCase);
-                var apiCoinSymbols = new HashSet<string>(allApiCoins.Select(c => c.Symbol), StringComparer.OrdinalIgnoreCase);
+                var apiCoinDictionaryWithName = allApiCoins.ToDictionary(c => c.Name, c => c.Id, StringComparer.OrdinalIgnoreCase);
+                var apiCoinDictionaryWithSymbol = allApiCoins.ToDictionary(c => c.Symbol, c => c.Id, StringComparer.OrdinalIgnoreCase);
 
                 Dictionary<CoinModel, bool> checkedCoins = new();
 
                 foreach (var coin in coinNames)
                 {
-                    var coinName = coin.Name; 
-                    if (apiCoinNames.Contains(coinName) || apiCoinSymbols.Contains(coinName))
+                    var coinName = coin.Name;
+
+                    if (apiCoinDictionaryWithName.TryGetValue(coinName, out var coinId) ||
+                        apiCoinDictionaryWithSymbol.TryGetValue(coinName, out coinId))
                     {
+                        coin.CoinLoreId = coinId;
                         checkedCoins.Add(coin, true);
                     }
                     else

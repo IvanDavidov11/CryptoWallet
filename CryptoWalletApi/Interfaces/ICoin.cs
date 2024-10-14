@@ -12,6 +12,6 @@ namespace CryptoWalletApi.Interfaces
 
         public decimal BuyPrice { get; set; }
 
-        //public int CoinLoreId { get; set; } // will be used later to get data from coinlore easier.
+        public string CoinLoreId { get; set; }
     }
 }

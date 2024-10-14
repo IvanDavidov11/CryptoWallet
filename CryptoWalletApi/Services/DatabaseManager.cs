@@ -22,6 +22,7 @@ namespace CryptoWalletApi.Services
                 Amount = coin.Amount,
                 BuyPrice = coin.BuyPrice,
                 Name = coin.Name,
+                CoinLoreId = coin.CoinLoreId
             }).ToListAsync();
         }
 

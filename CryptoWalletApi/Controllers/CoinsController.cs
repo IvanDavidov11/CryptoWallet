@@ -52,7 +52,7 @@ namespace CryptoWalletApi.Controllers
                 return NoContent();
             }
 
-            CheckedCoinsDTO checkedCoins = await _informationProcessService.ProcessCoinFileAsync(file);
+            CheckedCoinsDTO checkedCoins = await _informationProcessService.CheckValidityOfCoinFile(file);
 
             if (checkedCoins.BadCoins.Count > 0)
             {
@@ -69,7 +69,7 @@ namespace CryptoWalletApi.Controllers
         }
 
         [HttpPost("upload-safe")]
-        public async Task<ActionResult> UploadPortfolioWithSafeCoins([FromBody] List<CoinModel> goodCoins)
+        public async Task<ActionResult> UploadPortfolioWithSafeCoins([FromBody] List<CoinDatabaseModel> goodCoins)
         {
             if (_dbManager is null)
                 return BadRequest(); // log error

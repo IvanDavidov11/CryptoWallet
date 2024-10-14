@@ -13,7 +13,7 @@ namespace CryptoWalletApi.Services
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<CoinModel>> GetOwnedCoinsAsync()
+        public async Task<ICollection<CoinDatabaseModel>> GetOwnedCoinsAsync()
         {
             return await _dbContext.Coins.ToListAsync();
         }
@@ -23,7 +23,7 @@ namespace CryptoWalletApi.Services
             return _dbContext.Coins.Count() > 0;
         }
 
-        public async Task<bool> SeedDbWithCoinsFileAsync(ICollection<CoinModel> coinModels)
+        public async Task<bool> SeedDbWithCoinsFileAsync(ICollection<CoinDatabaseModel> coinModels)
         {
             try
             {

@@ -32,7 +32,7 @@ namespace CryptoWalletApi.Services
             }
         }
 
-        public async Task<Dictionary<CoinModel, bool>> TryFindCoinsInApiAsync(ICollection<CoinModel> coinNames)
+        public async Task<Dictionary<CoinDatabaseModel, bool>> TryFindCoinsInApiAsync(ICollection<CoinDatabaseModel> coinNames)
         {
             // will use later for deeper searching
             // var amountOfCoins = GetGlobalDataFromApiAsync().Result.CoinsCount;
@@ -50,7 +50,7 @@ namespace CryptoWalletApi.Services
                 var apiCoinDictionaryWithName = allApiCoins.ToDictionary(c => c.Name, c => c.Id, StringComparer.OrdinalIgnoreCase);
                 var apiCoinDictionaryWithSymbol = allApiCoins.ToDictionary(c => c.Symbol, c => c.Id, StringComparer.OrdinalIgnoreCase);
 
-                Dictionary<CoinModel, bool> checkedCoins = new();
+                Dictionary<CoinDatabaseModel, bool> checkedCoins = new();
 
                 foreach (var coin in coinNames)
                 {
@@ -110,7 +110,7 @@ namespace CryptoWalletApi.Services
             }
         }
 
-        public async Task<ICollection<CoinLoreCoinDTO>> GetCoinsInformationFromAPI(ICollection<string> coinLoreIds)
+        public async Task<ICollection<CoinLoreCoinDTO>> GetCoinsInformationFromApiAsync(ICollection<string> coinLoreIds)
         {
             var request = new HttpRequestMessage
             {

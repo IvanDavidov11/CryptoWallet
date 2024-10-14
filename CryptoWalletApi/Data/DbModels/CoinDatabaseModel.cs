@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CryptoWalletApi.Data.DbModels
 {
-    public class CoinModel : ICoin
+    public class CoinDatabaseModel : ICoin
     {
         [Required]
         public int Id { get; set; }

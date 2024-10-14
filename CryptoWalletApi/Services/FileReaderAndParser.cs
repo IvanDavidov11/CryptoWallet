@@ -18,13 +18,13 @@ namespace CryptoWalletApi.Services
             }
         }
 
-        public static async Task<List<CoinModel>> MapFileToCoinDbModelsAsync(IFormFile file)
+        public static async Task<List<CoinDatabaseModel>> MapFileToCoinDbModelsAsync(IFormFile file)
         {
             var allCoinsAsStrings = await GetFileAsStringCollectionAsync(file);
             if (allCoinsAsStrings == null)
                 return null;
 
-            var allCoins = new List<CoinModel>();
+            var allCoins = new List<CoinDatabaseModel>();
 
             foreach (var coinInfo in allCoinsAsStrings)
             {
@@ -37,7 +37,7 @@ namespace CryptoWalletApi.Services
                     decimal.TryParse(coin[2], out decimal coinAmount))
                 {
                     var coinName = coin[1];
-                    allCoins.Add(new CoinModel()
+                    allCoins.Add(new CoinDatabaseModel()
                     {
                         Name = coinName,
                         Amount = coinAmount,

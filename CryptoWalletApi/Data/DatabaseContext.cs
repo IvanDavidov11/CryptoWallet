@@ -7,11 +7,11 @@ namespace CryptoWalletApi.Data
     {
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
 
-        public DbSet<CoinModel> Coins { get; set; }
+        public DbSet<CoinDatabaseModel> Coins { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<CoinModel>(entity =>
+            modelBuilder.Entity<CoinDatabaseModel>(entity =>
             {
                 entity.Property(e => e.Name)
                     .IsRequired()

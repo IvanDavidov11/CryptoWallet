@@ -1,4 +1,5 @@
-﻿using CryptoWalletApi.ViewModels;
+﻿using CryptoWalletApi.Data.DbModels;
+using CryptoWalletApi.ViewModels;
 
 namespace CryptoWalletApi.Services
 {
@@ -8,7 +9,7 @@ namespace CryptoWalletApi.Services
 
         public async Task<IEnumerable<CoinViewModel>> GenerateCoinViewModelsAsync(DatabaseManager dbManager)
         {
-            IEnumerable<Data.DbModels.CoinModel> coinDbModels = await dbManager.GetOwnedCoinsAsync();
+            IEnumerable<Data.DbModels.CoinDatabaseModel> coinDbModels = await dbManager.GetOwnedCoinsAsync();
             var coinViewModels = coinDbModels.Select(x => new CoinViewModel()
             {
                 Id = x.Id,
@@ -18,11 +19,13 @@ namespace CryptoWalletApi.Services
                 CoinLoreId = x.CoinLoreId,
             }).ToList();
 
-            coinViewModels = await UpdateCoinPercentageChangesAsync(dbManager, coinViewModels);
+            coinViewModels = await GetCurrentCoinPricesAsync(dbManager, coinViewModels);
+            coinViewModels = await GetCoinPercentageChangesAsync(dbManager, coinViewModels);
             return coinViewModels;
         }
 
-        public async Task<List<CoinViewModel>> UpdateCoinPercentageChangesAsync(DatabaseManager dbManager, List<CoinViewModel> coins)
+        // this one stays private because it depends on the viewModels having current prices set.
+        private async Task<List<CoinViewModel>> GetCoinPercentageChangesAsync(DatabaseManager dbManager, List<CoinViewModel> coins)
         {
             var percentageChanges = await _informationProcessService.CalculateValuePercentageChangeOfCoinsAsync(coins);
 
@@ -33,5 +36,30 @@ namespace CryptoWalletApi.Services
 
             return coins;
         }
+
+        public async Task<List<CoinViewModel>> GetCurrentCoinPricesAsync(DatabaseManager dbManager, List<CoinViewModel> coins)
+        {
+            var currentPrices = await _informationProcessService.CalculateCoinCurrentPriceAsync(coins);
+
+            foreach (var coin in coins)
+            {
+                coin.CurrentPrice = currentPrices[coin.Id];
+            }
+
+            return coins;
+        }
+
+        //public async Task<List<CoinViewModel>> GetCurrentCoinPricesAsync(DatabaseManager dbManager)
+        //{
+        //    var coins = await GenerateCoinViewModelsAsync(dbManager);
+        //    var currentPrices = await _informationProcessService.CalculateCoinCurrentPriceAsync(coins);
+
+        //    foreach (var coin in coins)
+        //    {
+        //        coin.CurrentPrice = currentPrices[coin.Id];
+        //    }
+
+        //    return coins.ToList();
+        //}
     }
 }

@@ -1,6 +1,5 @@
 ﻿using CryptoWalletApi.Data.DbModels;
 using CryptoWalletApi.DataTransferObjects;
-using CryptoWalletApi.Interfaces;
 using CryptoWalletApi.ViewModels;
 
 namespace CryptoWalletApi.Services
@@ -9,17 +8,17 @@ namespace CryptoWalletApi.Services
     {
         private CoinLoreApiManager _coinLoreApiManager = new();
 
-        public async Task<CheckedCoinsDTO> ProcessCoinFileAsync(IFormFile file)
+        public async Task<CheckedCoinsDTO> CheckValidityOfCoinFile(IFormFile file)
         {
-            List<CoinModel> allCoins = await FileReaderAndParser.MapFileToCoinDbModelsAsync(file);
-            ICollection<CoinModel> goodCoins = new List<CoinModel>();
-            ICollection<CoinModel> badCoins = new List<CoinModel>();
+            List<CoinDatabaseModel> allCoins = await FileReaderAndParser.MapFileToCoinDbModelsAsync(file);
+            ICollection<CoinDatabaseModel> goodCoins = new List<CoinDatabaseModel>();
+            ICollection<CoinDatabaseModel> badCoins = new List<CoinDatabaseModel>();
             var checkedCoins = new CheckedCoinsDTO(goodCoins, badCoins);
 
             if (allCoins == null || allCoins.Count == 0)
                 return checkedCoins;
 
-            Dictionary<CoinModel, bool> result = await _coinLoreApiManager.TryFindCoinsInApiAsync(allCoins);
+            Dictionary<CoinDatabaseModel, bool> result = await _coinLoreApiManager.TryFindCoinsInApiAsync(allCoins);
             foreach (var coin in result)
             {
                 if (coin.Value == true)
@@ -35,10 +34,8 @@ namespace CryptoWalletApi.Services
             return checkedCoins;
         }
 
-        public async Task<decimal> CalculateInitialPortfolioValueAsync(DatabaseManager dbManger)
+        public async Task<decimal> CalculateInitialPortfolioValueAsync(IEnumerable<CoinDatabaseModel> allCoins)
         {
-            var allCoins = await dbManger.GetOwnedCoinsAsync();
-
             decimal initialValue = 0;
 
             foreach (var coin in allCoins)
@@ -47,6 +44,19 @@ namespace CryptoWalletApi.Services
             }
 
             return initialValue;
+        }
+
+        public async Task<decimal> CalculateCurrentPortfolioValueAsync(List<CoinDatabaseModel> allCoins)
+        {
+            var allCoinPrices = await CalculateCoinCurrentPriceAsync(allCoins);
+            decimal currentValue = 0;
+
+            foreach (var coin in allCoins)
+            {
+                currentValue += (coin.Amount * allCoinPrices[coin.Id]);
+            }
+
+            return currentValue;
         }
 
         public async Task<string> CalculateValuePercentageChangeOfCoinAsync(CoinViewModel coin)
@@ -61,14 +71,56 @@ namespace CryptoWalletApi.Services
             return $"{change * 100}%";
         }
 
-        public async Task<Dictionary<int, string>> CalculateValuePercentageChangeOfCoinsAsync(IEnumerable<CoinViewModel> coins)
+        public async Task<Dictionary<int,string>> CalculateValuePercentageChangeOfCoinsAsync(List<CoinViewModel> coins)
+        {
+            Dictionary<int,string> currentPrices = new();
+
+            foreach (var coin in coins)
+            {
+                if (coin.CurrentPrice is null)
+                    continue;
+
+                decimal coinCurrentValue = coin.CurrentPrice.GetValueOrDefault();
+                decimal coinInitialValue = coin.BuyPrice;
+                decimal change = (coinCurrentValue - coinInitialValue) / coinInitialValue;
+                string percentage = $"{(change * 100):F2}%"; // format to second decimal of percent
+                currentPrices.Add(coin.Id, percentage);
+            }
+
+            return currentPrices;
+        }
+
+        public async Task<Dictionary<int, decimal>> CalculateCoinCurrentPriceAsync(List<CoinViewModel> coins)
         {
             ICollection<CoinLoreCoinDTO> coinDTOs = await _coinLoreApiManager
-                .GetCoinsInformationFromAPI(coins
+                .GetCoinsInformationFromApiAsync(coins
                     .Select(coin => coin.CoinLoreId)
                     .ToList());
 
-            Dictionary<int, string> percentageChanges = new();
+            Dictionary<int, decimal> coinPrices = new();
+            foreach (var coinDTO in coinDTOs)
+            {
+                var matchedCoin = coins.FirstOrDefault(coin => coin.CoinLoreId.Equals(coinDTO.Id));
+                
+                if (matchedCoin is null)
+                    continue; // handle fail of coin match
+                
+                decimal coinCurrentValue = coinDTO.PriceUsd;
+
+                coinPrices.Add(matchedCoin.Id, coinCurrentValue);
+            }
+
+            return coinPrices;
+        }
+
+        public async Task<Dictionary<int, decimal>> CalculateCoinCurrentPriceAsync(List<CoinDatabaseModel> coins)
+        {
+            ICollection<CoinLoreCoinDTO> coinDTOs = await _coinLoreApiManager
+                .GetCoinsInformationFromApiAsync(coins
+                    .Select(coin => coin.CoinLoreId)
+                    .ToList());
+
+            Dictionary<int, decimal> coinPrices = new();
             foreach (var coinDTO in coinDTOs)
             {
                 var matchedCoin = coins.FirstOrDefault(coin => coin.CoinLoreId.Equals(coinDTO.Id));
@@ -77,14 +129,11 @@ namespace CryptoWalletApi.Services
                     continue; // handle fail of coin match
 
                 decimal coinCurrentValue = coinDTO.PriceUsd;
-                decimal coinInitialValue = matchedCoin.BuyPrice;
-                decimal change = (coinCurrentValue - coinInitialValue) / coinInitialValue;
-                string percentage = $"{(change * 100):F2}%"; // format to second decimal of percent
 
-                percentageChanges.Add(matchedCoin.Id, percentage);
+                coinPrices.Add(matchedCoin.Id, coinCurrentValue);
             }
 
-            return percentageChanges;
+            return coinPrices;
         }
     }
 }

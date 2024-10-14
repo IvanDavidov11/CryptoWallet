@@ -1,17 +1,17 @@
 import React from 'react'
 import CoinRow from './CoinRow'
 
-const CoinTable = ({ coins }) => {
+const CoinTable = ({ coins, tableCaption}) => {
     return (
         <div className='table_component'>
 
             <table>
-                <caption>Your owned coins</caption>
+                <caption>{tableCaption}</caption>
                 <thead>
                     <tr>
-                        <th>Header 1</th>
-                        <th>Header 2</th>
-                        <th>Header 3</th>
+                        <th>Coin Name</th>
+                        <th>Amount</th>
+                        <th>Bought For</th>
                     </tr>
                 </thead>
                 <tbody>

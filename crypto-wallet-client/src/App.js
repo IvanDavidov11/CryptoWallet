@@ -56,8 +56,7 @@ function App() {
     checkIfHasCoins();
   }, [fileUploaded]);
 
-  const handleFileUpload = (file) => {
-    console.log('File uploaded:', file);
+  const handleFileUpload = () => {
     setFileUploaded(true);
   };
 

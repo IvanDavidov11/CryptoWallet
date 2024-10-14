@@ -1,12 +1,12 @@
 import React from 'react'
 import CoinTable from './CoinTable'
-import Header from './Header'
+import CoinTableHeader from './CoinTableHeader'
 
 const CoinPortfolio = ({ coins }) => {
   return (
     <>
-      <Header />
-      <CoinTable coins={coins} />
+      <CoinTableHeader />
+      <CoinTable coins={coins} tableCaption={'Your Owned Coins'}/>
     </>
   )
 }

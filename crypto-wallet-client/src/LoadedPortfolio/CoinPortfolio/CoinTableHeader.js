@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Header = () => {
+const CoinTableHeader = () => {
   return (
     <div className="LoadedHeader">
       <h1>Your Crypto Portfolio</h1>
@@ -10,4 +10,4 @@ const Header = () => {
   )
 }
 
-export default Header
+export default CoinTableHeader

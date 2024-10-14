@@ -1,10 +1,9 @@
 import React from 'react'
 import { useState } from 'react';
 
-const Upload = ({ onFileUpload }) => {
+const Upload = ({ uploadCaption, onFileUpload, setUploadFormatFailed, setBadCoins, setGoodCoins }) => {
     const [file, setFile] = useState(null);
     const upload_ApiUrl = "https://localhost:7038/api/coins/upload";
-
 
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
@@ -14,7 +13,7 @@ const Upload = ({ onFileUpload }) => {
         event.preventDefault();
         if (file) {
             const formData = new FormData();
-            formData.append('file', file); // 'file' should match the parameter name in your API
+            formData.append('file', file);
 
             try {
                 const response = await fetch(upload_ApiUrl, {
@@ -24,9 +23,19 @@ const Upload = ({ onFileUpload }) => {
 
                 if (!response.ok) throw new Error('File upload failed');
 
-                const result = await response.json();
-                console.log('File upload successful:', result);
-                onFileUpload(result);
+                if (response.status === 206) {
+                    const result = await response.json();
+                    setBadCoins(result.badCoins);
+                    setGoodCoins(result.goodCoins);
+                    setUploadFormatFailed(true);
+                    console.log(`${response.status} - ${result.badCoins}`);
+                }
+                else if (response.ok) {
+                    const result = await response.text();
+                    console.log(result);
+                    onFileUpload();
+                }
+
             } catch (error) {
                 console.error('Error uploading file:', error);
             }
@@ -35,7 +44,7 @@ const Upload = ({ onFileUpload }) => {
 
     return (
         <form className='upload-form' onSubmit={handleSubmit}>
-            <label htmlFor="file-upload">Upload your crypto portfolio:</label>
+            <label htmlFor="file-upload">{uploadCaption}</label>
             <input
                 type="file"
                 id="file-upload"

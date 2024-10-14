@@ -1,4 +1,6 @@
-﻿namespace CryptoWalletApi.Interfaces
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CryptoWalletApi.Interfaces
 {
     public interface ICoin
     {
@@ -9,5 +11,7 @@
         public decimal Amount { get; set; }
 
         public decimal BuyPrice { get; set; }
+
+        //public int CoinLoreId { get; set; } // will be used later to get data from coinlore easier.
     }
 }

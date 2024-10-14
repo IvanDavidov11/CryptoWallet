@@ -1,4 +1,5 @@
 ﻿using CryptoWalletApi.Data;
+using CryptoWalletApi.Data.DbModels;
 using CryptoWalletApi.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,19 +30,23 @@ namespace CryptoWalletApi.Services
             return _dbContext.Coins.Count() > 0;
         }
 
-        public async Task<bool> SeedDbWithCoins(IFormFile file)
+        public async Task<bool> SeedDbWithCoinsFileAsync(ICollection<CoinModel> coinModels)
         {
-            List<Data.DbModels.CoinModel> allCoins =await FileReaderAndParser.MapFileToCoinDbModels(file);
-            if (allCoins == null || allCoins.Count == 0)
+            try
+            {
+                await _dbContext.AddRangeAsync(coinModels);
+                await _dbContext.SaveChangesAsync();
+
+                return true;
+            }
+            catch
+            {
                 return false;
-
-            await _dbContext.AddRangeAsync(allCoins);
-            await _dbContext.SaveChangesAsync();
-
-            return true;
+            }
         }
 
-        public async Task<bool> ClearCoinsFromDb()
+
+        public async Task<bool> ClearCoinsFromDbAsync()
         {
             _dbContext.Coins.RemoveRange(_dbContext.Coins);
             await _dbContext.SaveChangesAsync();

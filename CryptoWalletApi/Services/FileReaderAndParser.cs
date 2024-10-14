@@ -6,7 +6,7 @@ namespace CryptoWalletApi.Services
     {
         private static readonly char[] separators = new[] { '|', ',' };
 
-        public async static Task<List<string>> GetFileAsStringCollection(IFormFile file)
+        public async static Task<List<string>> GetFileAsStringCollectionAsync(IFormFile file)
         {
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
@@ -18,9 +18,9 @@ namespace CryptoWalletApi.Services
             }
         }
 
-        public static async Task<List<CoinModel>> MapFileToCoinDbModels(IFormFile file)
+        public static async Task<List<CoinModel>> MapFileToCoinDbModelsAsync(IFormFile file)
         {
-            var allCoinsAsStrings = await GetFileAsStringCollection(file);
+            var allCoinsAsStrings = await GetFileAsStringCollectionAsync(file);
             if (allCoinsAsStrings == null)
                 return null;
 
@@ -42,6 +42,7 @@ namespace CryptoWalletApi.Services
                         Name = coinName,
                         Amount = coinAmount,
                         BuyPrice = coinBoughtPrice,
+                        //CoinLoreId = 0,
                     });
                 }
                 else

@@ -1,8 +1,9 @@
 ﻿using CryptoWalletApi.Data;
+using CryptoWalletApi.Data.DbModels;
+using CryptoWalletApi.DataTransferObjects;
 using CryptoWalletApi.Services;
 using CryptoWalletApi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace CryptoWalletApi.Controllers
 {
@@ -11,6 +12,7 @@ namespace CryptoWalletApi.Controllers
     public class CoinsController : ControllerBase
     {
         private DatabaseManager _dbManager;
+        private InformationProcessService _informationProcessService = new();
         public CoinsController(DatabaseContext context)
         {
             _dbManager = new DatabaseManager(context);
@@ -20,12 +22,12 @@ namespace CryptoWalletApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CoinViewModel>>> GetCoins()
         {
-            if(_dbManager is null)
+            if (_dbManager is null)
                 return BadRequest(); // log error
-            
+
             var coins = await _dbManager.GetOwnedCoinsAsync();
-            
-            if(coins is null)
+
+            if (coins is null)
                 return NoContent(); // log error
 
             return Ok(coins);
@@ -45,17 +47,44 @@ namespace CryptoWalletApi.Controllers
         {
             if (file == null || file.Length == 0)
             {
-                return BadRequest("No file uploaded.");
+                return NoContent();
             }
 
-            var result = await _dbManager.SeedDbWithCoins(file);
-            return result ? Ok(result) : NoContent();
+            CheckedCoinsDTO checkedCoins = await _informationProcessService.ProcessCoinFile(file);
+
+            if (checkedCoins.BadCoins.Count > 0)
+            {
+                return StatusCode(206, new
+                {
+                    goodCoins = checkedCoins.GoodCoins,
+                    badCoins = checkedCoins.BadCoins,
+                });
+            }
+
+            var successfulyAddedToDb = await _dbManager.SeedDbWithCoinsFileAsync(checkedCoins.GoodCoins);
+
+            return successfulyAddedToDb ? Ok("Coins added successfully.") : StatusCode(500, "Error adding coins.");
         }
+
+        [HttpPost("upload-safe")]
+        public async Task<ActionResult> UploadPortfolioWithSafeCoins([FromBody] List<CoinModel> goodCoins)
+        {
+            if (_dbManager is null)
+                return BadRequest(); // log error
+
+            if (goodCoins == null || !goodCoins.Any())
+                return BadRequest("No good coins provided.");
+
+            var successfullyAdded = await _dbManager.SeedDbWithCoinsFileAsync(goodCoins);
+
+            return successfullyAdded ? Ok("Good coins added successfully.") : StatusCode(500, "Error adding good coins.");
+        }
+
 
         [HttpDelete("clear")]
         public async Task<ActionResult> ClearPortfolio()
         {
-            var result = await _dbManager.ClearCoinsFromDb();
+            var result = await _dbManager.ClearCoinsFromDbAsync();
             return result ? Ok() : BadRequest();
         }
     }

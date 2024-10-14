@@ -14,6 +14,7 @@ namespace CryptoWalletApi.Controllers
         private DatabaseManager _dbManager;
         private InformationProcessService _informationProcessService = new();
         private ViewModelManager _viewModelManager = new();
+
         public CoinsController(DatabaseContext context)
         {
             _dbManager = new DatabaseManager(context);
@@ -80,7 +81,6 @@ namespace CryptoWalletApi.Controllers
 
             return successfullyAdded ? Ok("Good coins added successfully.") : StatusCode(500, "Error adding good coins.");
         }
-
 
         [HttpDelete("clear")]
         public async Task<ActionResult> ClearPortfolio()

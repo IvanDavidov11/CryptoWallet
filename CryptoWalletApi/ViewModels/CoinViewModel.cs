@@ -23,5 +23,7 @@ namespace CryptoWalletApi.ViewModels
         public string CoinLoreId { get; set; }
 
         public string? PercentageChange { get; set; }
+
+        public decimal? CurrentPrice { get; set; }
     }
 }

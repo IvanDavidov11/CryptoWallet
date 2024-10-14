@@ -1,6 +1,5 @@
 ﻿using CryptoWalletApi.Data;
 using CryptoWalletApi.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoWalletApi.Controllers

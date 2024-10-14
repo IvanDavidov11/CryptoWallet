@@ -1,6 +1,5 @@
 ﻿using CryptoWalletApi.Data;
 using CryptoWalletApi.Data.DbModels;
-using CryptoWalletApi.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace CryptoWalletApi.Services
@@ -38,7 +37,6 @@ namespace CryptoWalletApi.Services
                 return false;
             }
         }
-
 
         public async Task<bool> ClearCoinsFromDbAsync()
         {

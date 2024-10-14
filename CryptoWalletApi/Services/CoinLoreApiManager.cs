@@ -139,7 +139,5 @@ namespace CryptoWalletApi.Services
                 return foundCoins;
             }
         }
-
-
     }
 }

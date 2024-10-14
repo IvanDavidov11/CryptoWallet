@@ -36,13 +36,12 @@ namespace CryptoWalletApi.Services
                 if (decimal.TryParse(coin[0], out decimal coinBoughtPrice) &&
                     decimal.TryParse(coin[2], out decimal coinAmount))
                 {
-                    var coinName = coin[1]; // add check with crypto api if coin exists
+                    var coinName = coin[1];
                     allCoins.Add(new CoinModel()
                     {
                         Name = coinName,
                         Amount = coinAmount,
                         BuyPrice = coinBoughtPrice,
-                        //CoinLoreId = 0,
                     });
                 }
                 else

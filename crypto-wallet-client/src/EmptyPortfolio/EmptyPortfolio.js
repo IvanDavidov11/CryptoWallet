@@ -27,7 +27,7 @@ const EmptyPortfolio = ({ onFileUpload }) => {
             setBadCoins={setBadCoins}
             setGoodCoins={setGoodCoins}
           />
-        </> ) : (
+        </>) : (
         <>
           <EmptyPortfolioHeader />
           <Upload

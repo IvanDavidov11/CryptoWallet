@@ -8,7 +8,7 @@ const CoinPortfolio = ({ coins }) => {
   return (
     <>
       <CoinTableHeader />
-      <CoinTable coins={coins} tableCaption={'Your Owned Coins'} hasApiCalculations={hasApiCalculations}/>
+      <CoinTable coins={coins} tableCaption={'Your Owned Coins'} hasApiCalculations={hasApiCalculations} />
     </>
   )
 }

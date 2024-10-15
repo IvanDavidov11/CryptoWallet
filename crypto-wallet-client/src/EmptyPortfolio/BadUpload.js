@@ -4,7 +4,7 @@ import SendGoodCoinsButton from './SendGoodCoinsButton'
 
 const BadUpload = ({ goodCoins, badCoins, onFileUpload }) => {
   const hasApiCalculations = false;
-  
+
   return (
     <>
       <CoinTable
@@ -18,7 +18,7 @@ const BadUpload = ({ goodCoins, badCoins, onFileUpload }) => {
         tableCaption={'Good Coins (TEMP)'}
         hasApiCalculations={hasApiCalculations}
       />
-      <SendGoodCoinsButton goodCoins={goodCoins} onFileUpload={onFileUpload}/>
+      <SendGoodCoinsButton goodCoins={goodCoins} onFileUpload={onFileUpload} />
     </>
   )
 }

@@ -74,6 +74,21 @@ namespace CryptoWalletApi.Services
             }
         }
 
+        public async Task<bool> UpdateRefreshIntervalOfUser(int refreshInterval)
+        {
+            try
+            {
+                var userPreferences = await GetUserPreferencesAsync();
+                userPreferences.RefreshInterval = refreshInterval;
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task<bool> ClearCoinsFromDbAsync()
         {
             _dbContext.Coins.RemoveRange(_dbContext.Coins);

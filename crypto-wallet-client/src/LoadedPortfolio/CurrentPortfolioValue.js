@@ -23,7 +23,6 @@ const CurrentPortfolioValue = () => {
           fetchCurrentValue();
     },[]);
 
-
     return (
         <div>
             <h3>Current Value:</h3>

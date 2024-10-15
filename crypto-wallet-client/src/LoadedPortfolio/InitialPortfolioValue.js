@@ -23,7 +23,6 @@ const InitialPortfolioValue = () => {
           fetchInitalValue();
     },[]);
 
-
     return (
         <div>
             <h3>Initial Value:</h3>

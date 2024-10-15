@@ -2,7 +2,6 @@ import React from 'react'
 import CoinTable from '../LoadedPortfolio/CoinPortfolio/CoinTable'
 import SendGoodCoinsButton from './SendGoodCoinsButton'
 
-
 const BadUpload = ({ goodCoins, badCoins, onFileUpload }) => {
   const hasApiCalculations = false;
   

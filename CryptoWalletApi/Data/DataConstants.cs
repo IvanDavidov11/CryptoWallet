@@ -12,5 +12,7 @@
         public const int CoinNameLengthMaximum = 100;
 
         public const string FrontendClientUrl = @"http://localhost:3000";
+
+        public const int DefaultPortfolioRefreshInterval = 5;
     }
 }

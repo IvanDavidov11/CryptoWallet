@@ -9,6 +9,8 @@ namespace CryptoWalletApi.Data
 
         public DbSet<CoinDatabaseModel> Coins { get; set; }
 
+        public DbSet<UserPreferencesDatabaseModel> UserPreferences { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CoinDatabaseModel>(entity =>

@@ -24,9 +24,6 @@ namespace CryptoWalletApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CoinViewModel>>> GetCoins()
         {
-            if (_dbManager is null)
-                return BadRequest(); // log error
-
             var coins = await _viewModelManager.GenerateCoinViewModelsAsync(_dbManager);
 
             if (coins is null)
@@ -38,20 +35,12 @@ namespace CryptoWalletApi.Controllers
         [HttpGet("has-coins")]
         public ActionResult<bool> HasCoins()
         {
-            if (_dbManager is null)
-                return BadRequest(); // log error
-
             return Ok(_dbManager.DbHasCoins());
         }
 
         [HttpPost("upload")]
         public async Task<ActionResult> UploadPortfolio(IFormFile file)
         {
-            if (file == null || file.Length == 0)
-            {
-                return NoContent();
-            }
-
             CheckedCoinsDTO checkedCoins = await _informationProcessService.CheckValidityOfCoinFile(file);
 
             if (checkedCoins.BadCoins.Count > 0)
@@ -71,9 +60,6 @@ namespace CryptoWalletApi.Controllers
         [HttpPost("upload-safe")]
         public async Task<ActionResult> UploadPortfolioWithSafeCoins([FromBody] List<CoinDatabaseModel> goodCoins)
         {
-            if (_dbManager is null)
-                return BadRequest(); // log error
-
             if (goodCoins == null || !goodCoins.Any())
                 return BadRequest("No good coins provided.");
 

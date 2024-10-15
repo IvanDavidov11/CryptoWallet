@@ -20,22 +20,14 @@ namespace CryptoWalletApi.Controllers
         [HttpGet]
         public async Task<ActionResult<UserPreferencesDatabaseModel>> GetPreferences()
         {
-            if (_dbManager is null)
-                return BadRequest(); // log error
-
             var userPreferences = await _dbManager.GetUserPreferencesAsync();
-
             return Ok(userPreferences);
         }
 
         [HttpPatch("set-interval")]
         public async Task<ActionResult> UpdateRefreshInterval([FromBody] UpdateUserPreferencesDTO preferencesDTO)
         {
-            if (_dbManager is null)
-                return BadRequest(); // log error
-
             var success = await _dbManager.UpdateRefreshIntervalOfUser(preferencesDTO.RefreshInterval);
-
             return success? Ok() : BadRequest(); // log error
         }
     }

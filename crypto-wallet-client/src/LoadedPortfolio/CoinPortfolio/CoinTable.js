@@ -20,8 +20,11 @@ const CoinTable = ({ coins, tableCaption, hasApiCalculations }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {coins.map((coin) =>
-                        <CoinRow key={coin.id} coin={coin} hasApiCalculations={hasApiCalculations} />
+                    {coins.map((coin, index) =>
+                        <CoinRow key={coin.id !== 0 ? coin.id : `${coin.name}-${index}`}
+                            coin={coin}
+                            hasApiCalculations={hasApiCalculations}
+                        />
                     )}
                 </tbody>
             </table>

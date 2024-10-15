@@ -17,23 +17,6 @@ function App() {
   }, [hasCoins]);
 
   useEffect(() => {
-    const checkIfHasCoins = async () => {
-      try {
-        const response = await fetch(hasCoins_ApiUrl);
-
-        if (!response.ok) throw Error('Did not receive expected data');
-
-        const hasCoinsValue = await response.json();
-        console.log(`HasCoins executed: ${hasCoinsValue}`);
-        setHasCoins(hasCoinsValue);
-      }
-      catch (err) {
-        console.log(err);
-      }
-      finally {
-        setIsLoading(false);
-      }
-    }
     checkIfHasCoins();
   }, [fileUploaded]);
 
@@ -59,12 +42,30 @@ function App() {
     }
   }
 
+  const checkIfHasCoins = async () => {
+    try {
+      const response = await fetch(hasCoins_ApiUrl);
+
+      if (!response.ok) throw Error('Did not receive expected data');
+
+      const hasCoinsValue = await response.json();
+      console.log(`HasCoins executed: ${hasCoinsValue}`);
+      setHasCoins(hasCoinsValue);
+    }
+    catch (err) {
+      console.log(err);
+    }
+    finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className="app">
       {!hasCoins ? (
         <EmptyPortfolio onFileUpload={handleFileUpload} />
       ) : (
-        <LoadedPortfolio coins={coins} setFileUploaded={setFileUploaded} fetchCoins={fetchCoins}/>
+        <LoadedPortfolio coins={coins} setFileUploaded={setFileUploaded} fetchCoins={fetchCoins}  checkIfHasCoins={checkIfHasCoins}/>
       )}
     </div>
   );

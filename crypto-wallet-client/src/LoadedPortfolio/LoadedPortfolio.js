@@ -4,11 +4,11 @@ import DeletePortfolio from './DeletePortfolio'
 import InitialPortfolioValue from './InitialPortfolioValue'
 import CurrentPortfolioValue from './CurrentPortfolioValue'
 
-const LoadedPortfolio = ({ coins, setFileUploaded, fetchCoins }) => {
+const LoadedPortfolio = ({ coins, setFileUploaded, fetchCoins, checkIfHasCoins }) => {
     return (
         <div className='loadedPortfolio'>
             <CoinPortfolio coins={coins} fetchCoins={fetchCoins} />
-            <DeletePortfolio setFileUploaded={setFileUploaded} />
+            <DeletePortfolio setFileUploaded={setFileUploaded} checkIfHasCoins={checkIfHasCoins} />
             <InitialPortfolioValue />
             <CurrentPortfolioValue />
         </div>

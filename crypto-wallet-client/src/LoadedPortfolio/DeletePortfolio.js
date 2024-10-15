@@ -1,6 +1,6 @@
 import React from 'react'
 
-const DeletePortfolio = ({ setFileUploaded }) => {
+const DeletePortfolio = ({ setFileUploaded, checkIfHasCoins }) => {
     const clearCoins_ApiUrl = "https://localhost:7038/api/coins/clear";
 
     const deletePortfolio = async () => {
@@ -9,6 +9,7 @@ const DeletePortfolio = ({ setFileUploaded }) => {
 
             if (response.ok) {
                 setFileUploaded(false);
+                checkIfHasCoins();
                 console.log('Portfolio cleared');
             }
         } catch (error) {

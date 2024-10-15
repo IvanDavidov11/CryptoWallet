@@ -12,12 +12,14 @@ namespace CryptoWalletApi.Controllers
     public class CoinsController : ControllerBase
     {
         private DatabaseManager _dbManager;
-        private InformationProcessService _informationProcessService = new();
-        private ViewModelManager _viewModelManager = new();
+        private InformationProcessService _informationProcessService;
+        private ViewModelManager _viewModelManager;
 
         public CoinsController(DatabaseContext context)
         {
             _dbManager = new DatabaseManager(context);
+            _informationProcessService = new InformationProcessService();
+            _viewModelManager = new ViewModelManager(_informationProcessService);
         }
 
         // GET: api/coins

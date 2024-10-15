@@ -11,8 +11,8 @@ namespace CryptoWalletApi.Services
         public async Task<CheckedCoinsDTO> CheckValidityOfCoinFile(IFormFile file)
         {
             List<CoinDatabaseModel> allCoins = await FileReaderAndParser.MapFileToCoinDbModelsAsync(file);
-            ICollection<CoinDatabaseModel> goodCoins = new List<CoinDatabaseModel>();
-            ICollection<CoinDatabaseModel> badCoins = new List<CoinDatabaseModel>();
+            List<CoinDatabaseModel> goodCoins = new();
+            List<CoinDatabaseModel> badCoins = new();
             var checkedCoins = new CheckedCoinsDTO(goodCoins, badCoins);
 
             if (allCoins == null || allCoins.Count == 0)
@@ -34,14 +34,12 @@ namespace CryptoWalletApi.Services
             return checkedCoins;
         }
 
-        public async Task<decimal> CalculateInitialPortfolioValueAsync(IEnumerable<CoinDatabaseModel> allCoins)
+        public decimal CalculateInitialPortfolioValue(IEnumerable<CoinDatabaseModel> allCoins)
         {
             decimal initialValue = 0;
 
             foreach (var coin in allCoins)
-            {
                 initialValue += (coin.Amount * coin.BuyPrice);
-            }
 
             return initialValue;
         }
@@ -52,9 +50,7 @@ namespace CryptoWalletApi.Services
             decimal currentValue = 0;
 
             foreach (var coin in allCoins)
-            {
                 currentValue += (coin.Amount * allCoinPrices[coin.Id]);
-            }
 
             return currentValue;
         }
@@ -71,7 +67,7 @@ namespace CryptoWalletApi.Services
             return $"{change * 100}%";
         }
 
-        public async Task<Dictionary<int,string>> CalculateValuePercentageChangeOfCoinsAsync(List<CoinViewModel> coins)
+        public Dictionary<int,string> CalculateValuePercentageChangeOfCoins(List<CoinViewModel> coins)
         {
             Dictionary<int,string> currentPrices = new();
 

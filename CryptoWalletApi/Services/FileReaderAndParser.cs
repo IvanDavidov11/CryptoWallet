@@ -42,6 +42,7 @@ namespace CryptoWalletApi.Services
                         Name = coinName,
                         Amount = coinAmount,
                         BuyPrice = coinBoughtPrice,
+                        CoinLoreId = string.Empty,
                     });
                 }
                 else

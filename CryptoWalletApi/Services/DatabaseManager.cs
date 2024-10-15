@@ -20,11 +20,11 @@ namespace CryptoWalletApi.Services
 
         public async Task<UserPreferencesDatabaseModel> GetUserPreferencesAsync()
         {
+            if(!DbHasUserPreferences())
+                await AddInitialUserPreferencesAsync();
+
             var userPreferences = await _dbContext.UserPreferences.FirstOrDefaultAsync(); // log error for null return
-            if (userPreferences == null)
-            {
-                // Log an error for null return, if needed
-            }
+            // Log an error for null return, if needed
 
             return userPreferences;
         }

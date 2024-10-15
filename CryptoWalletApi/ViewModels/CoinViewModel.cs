@@ -11,7 +11,7 @@ namespace CryptoWalletApi.ViewModels
 
         [Required]
         [MaxLength(DataConstants.CoinNameLengthMaximum)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Required]
         public decimal Amount { get; set; }
@@ -20,7 +20,7 @@ namespace CryptoWalletApi.ViewModels
         public decimal BuyPrice { get; set; }
 
         [Required] // is used to get data from coinlore api.
-        public string CoinLoreId { get; set; }
+        public required string CoinLoreId { get; set; }
 
         public string? PercentageChange { get; set; }
 

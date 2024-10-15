@@ -9,17 +9,19 @@ namespace CryptoWalletApi.Controllers
     public class PortfolioCalculatorController : ControllerBase
     {
         private DatabaseManager _dbManager;
-        private InformationProcessService _infoProcessService = new();
+        private InformationProcessService _informationProcessService;
+
         public PortfolioCalculatorController(DatabaseContext context)
         {
             _dbManager = new DatabaseManager(context);
+            _informationProcessService = new InformationProcessService();
         }
 
         [HttpGet("initial")]
         public async Task<ActionResult> CalculateInitialPortfolioValue()
         {
             var coins = await _dbManager.GetOwnedCoinsAsync();
-            decimal initialValue = await _infoProcessService.CalculateInitialPortfolioValueAsync(coins);
+            decimal initialValue = _informationProcessService.CalculateInitialPortfolioValue(coins);
 
             return Ok(initialValue);
         }
@@ -28,7 +30,7 @@ namespace CryptoWalletApi.Controllers
         public async Task<ActionResult> CalculateCurrentPortfolioValue()
         {
             var coins = await _dbManager.GetOwnedCoinsAsync();
-            decimal currentValue = await _infoProcessService.CalculateCurrentPortfolioValueAsync(coins.ToList());
+            decimal currentValue = await _informationProcessService.CalculateCurrentPortfolioValueAsync(coins.ToList());
 
             return Ok(currentValue);
         }

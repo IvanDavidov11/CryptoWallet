@@ -1,6 +1,6 @@
 import React from 'react'
 
-const ReloadCoinDataButton = ({ fetchCoins }) => {
+const RefreshPortfolioButton = ({ fetchCoins }) => {
 
     const handleCoinsReload = () => {
         fetchCoins();
@@ -13,4 +13,4 @@ const ReloadCoinDataButton = ({ fetchCoins }) => {
     )
 }
 
-export default ReloadCoinDataButton
+export default RefreshPortfolioButton

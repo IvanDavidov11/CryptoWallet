@@ -1,11 +1,11 @@
 import React from 'react'
+import ReloadCoinDataButton from './ReloadCoinDataButton'
 
-const CoinTableHeader = () => {
+const CoinTableHeader = ({ fetchCoins }) => {
   return (
     <div className="LoadedHeader">
-      <h1>Your Crypto Portfolio</h1>
       <h3>Your portfolio is updated every 5 minutes</h3>
-      <button>Refresh Now</button>
+      <ReloadCoinDataButton fetchCoins={fetchCoins} />
     </div>
   )
 }

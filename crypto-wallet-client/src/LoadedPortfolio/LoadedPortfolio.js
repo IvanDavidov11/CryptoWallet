@@ -1,14 +1,14 @@
 import React from 'react'
 import CoinPortfolio from './CoinPortfolio/CoinPortfolio'
-import ClearPortfolio from './ClearPortfolio'
+import DeletePortfolio from './DeletePortfolio'
 import InitialPortfolioValue from './InitialPortfolioValue'
 import CurrentPortfolioValue from './CurrentPortfolioValue'
 
-const LoadedPortfolio = ({ coins, setFileUploaded }) => {
+const LoadedPortfolio = ({ coins, setFileUploaded, fetchCoins }) => {
     return (
         <div className='loadedPortfolio'>
-            <ClearPortfolio setFileUploaded={setFileUploaded} />
-            <CoinPortfolio coins={coins} />
+            <CoinPortfolio coins={coins} fetchCoins={fetchCoins} />
+            <DeletePortfolio setFileUploaded={setFileUploaded} />
             <InitialPortfolioValue />
             <CurrentPortfolioValue />
         </div>

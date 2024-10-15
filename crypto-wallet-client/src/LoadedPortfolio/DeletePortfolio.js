@@ -1,9 +1,9 @@
 import React from 'react'
 
-const ClearPortfolio = ({ setFileUploaded }) => {
+const DeletePortfolio = ({ setFileUploaded }) => {
     const clearCoins_ApiUrl = "https://localhost:7038/api/coins/clear";
 
-    const clearPortfolio = async () => {
+    const deletePortfolio = async () => {
         try {
             const response = await fetch(clearCoins_ApiUrl, { method: 'DELETE' });
 
@@ -18,9 +18,9 @@ const ClearPortfolio = ({ setFileUploaded }) => {
 
     return (
         <div>
-            <button onClick={clearPortfolio}>Clear Portfolio</button>
+            <button onClick={deletePortfolio}>Delete Portfolio</button>
         </div>
     )
 }
 
-export default ClearPortfolio
+export default DeletePortfolio

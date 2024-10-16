@@ -1,8 +1,9 @@
 import React from 'react'
 import CoinTable from '../LoadedPortfolio/CoinPortfolio/CoinTable'
 import SendGoodCoinsButton from './SendGoodCoinsButton'
+import SendAllCoinsForDeeperSearchButton from './SendAllCoinsForDeeperSearchButton';
 
-const BadUpload = ({ goodCoins, badCoins, onFileUpload }) => {
+const BadUpload = ({ goodCoins, setGoodCoins, badCoins, setBadCoins, onFileUpload, setUploadFormatFailed }) => {
   const hasApiCalculations = false;
 
   return (
@@ -19,6 +20,11 @@ const BadUpload = ({ goodCoins, badCoins, onFileUpload }) => {
         hasApiCalculations={hasApiCalculations}
       />
       <SendGoodCoinsButton goodCoins={goodCoins} onFileUpload={onFileUpload} />
+      <SendAllCoinsForDeeperSearchButton
+        goodCoins={goodCoins} setGoodCoins={setGoodCoins}
+        badCoins={badCoins} setBadCoins={setBadCoins}
+        setUploadFormatFailed={setUploadFormatFailed}
+        onFileUpload={onFileUpload}/>
     </>
   )
 }

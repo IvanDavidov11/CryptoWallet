@@ -17,8 +17,11 @@ const EmptyPortfolio = ({ onFileUpload }) => {
           <BadUploadHeader />
           <BadUpload
             goodCoins={goodCoins}
+            setGoodCoins={setGoodCoins}
             badCoins={badCoins}
+            setBadCoins={setBadCoins}
             onFileUpload={onFileUpload}
+            setUploadFormatFailed={setUploadFormatFailed}
           />
           <Upload
             uploadCaption={"Re-upload your crypto portfolio file with fixed formatting or names (.txt, .csv)"}

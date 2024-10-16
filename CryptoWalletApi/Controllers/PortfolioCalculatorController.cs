@@ -10,11 +10,13 @@ namespace CryptoWalletApi.Controllers
     {
         private DatabaseManager _dbManager;
         private InformationProcessService _informationProcessService;
+        private ILogger _logger;
 
-        public PortfolioCalculatorController(DatabaseContext context)
+        public PortfolioCalculatorController(ILogger<CoinsController> logger, DatabaseContext context)
         {
-            _dbManager = new DatabaseManager(context);
-            _informationProcessService = new InformationProcessService();
+            _logger = logger;
+            _dbManager = new DatabaseManager(context, logger);
+            _informationProcessService = new InformationProcessService(logger);
         }
 
         [HttpGet("initial")]

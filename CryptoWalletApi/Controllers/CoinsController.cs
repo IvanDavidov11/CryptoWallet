@@ -14,11 +14,13 @@ namespace CryptoWalletApi.Controllers
         private DatabaseManager _dbManager;
         private InformationProcessService _informationProcessService;
         private ViewModelManager _viewModelManager;
+        private ILogger _logger;
 
-        public CoinsController(DatabaseContext context)
+        public CoinsController(ILogger<CoinsController> logger, DatabaseContext context)
         {
-            _dbManager = new DatabaseManager(context);
-            _informationProcessService = new InformationProcessService();
+            _logger = logger;
+            _dbManager = new DatabaseManager(context, logger);
+            _informationProcessService = new InformationProcessService(logger);
             _viewModelManager = new ViewModelManager(_informationProcessService);
         }
 
@@ -26,6 +28,8 @@ namespace CryptoWalletApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CoinViewModel>>> GetCoins()
         {
+            _logger.LogInformation("Entering GetCoins method...");
+
             IEnumerable<CoinViewModel>? coins = await _viewModelManager.GenerateCoinViewModelsAsync(_dbManager);
 
             if (coins is null)

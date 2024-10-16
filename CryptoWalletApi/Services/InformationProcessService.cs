@@ -1,4 +1,5 @@
-﻿using CryptoWalletApi.Data.DbModels;
+﻿using CryptoWalletApi.Controllers;
+using CryptoWalletApi.Data.DbModels;
 using CryptoWalletApi.DataTransferObjects;
 using CryptoWalletApi.ViewModels;
 
@@ -6,7 +7,12 @@ namespace CryptoWalletApi.Services
 {
     public class InformationProcessService
     {
-        private CoinLoreApiManager _coinLoreApiManager = new();
+        private ILogger _logger;
+
+        public InformationProcessService(ILogger<CoinsController> logger)
+        {
+            _logger = logger;
+        }
 
         public async Task<CheckedCoinsDTO> CheckValidityOfCoinFile(IFormFile file)
         {

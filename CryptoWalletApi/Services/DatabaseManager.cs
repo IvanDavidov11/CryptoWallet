@@ -7,10 +7,12 @@ namespace CryptoWalletApi.Services
     public class DatabaseManager
     {
         private DatabaseContext _dbContext;
+        private ILogger _logger;
 
-        public DatabaseManager(DatabaseContext dbContext)
+        public DatabaseManager(DatabaseContext dbContext, ILogger logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         public async Task<ICollection<CoinDatabaseModel>> GetOwnedCoinsAsync()

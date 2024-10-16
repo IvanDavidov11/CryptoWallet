@@ -11,10 +11,12 @@ namespace CryptoWalletApi.Controllers
     public class UserPreferencesController : ControllerBase
     {
         private DatabaseManager _dbManager;
+        private ILogger _logger;
 
-        public UserPreferencesController(DatabaseContext dbContext)
+        public UserPreferencesController(ILogger<CoinsController> logger, DatabaseContext dbContext)
         {
-            _dbManager = new DatabaseManager(dbContext);
+            _logger = logger;
+            _dbManager = new DatabaseManager(dbContext, logger);
         }
 
         [HttpGet]

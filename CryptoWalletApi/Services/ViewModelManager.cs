@@ -13,6 +13,7 @@ namespace CryptoWalletApi.Services
 
         public async Task<IEnumerable<CoinViewModel>> GenerateCoinViewModelsAsync(DatabaseManager dbManager)
         {
+
             IEnumerable<Data.DbModels.CoinDatabaseModel> coinDbModels = await dbManager.GetOwnedCoinsAsync();
             var coinViewModels = coinDbModels.Select(x => new CoinViewModel()
             {

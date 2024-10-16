@@ -38,6 +38,7 @@ namespace CryptoWalletApi.Controllers
                 return NoContent();
             }
 
+            _logger.LogInformation("Getting all coins finished successfully, sending all coins to front-end.");
             return Ok(coins);
         }
 

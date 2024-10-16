@@ -41,7 +41,7 @@ namespace CryptoWalletApi.Services
 
         public async Task<List<CoinViewModel>> GetCurrentCoinPricesAsync(List<CoinViewModel> coins)
         {
-            var currentPrices = await _informationProcessService.CalculateCoinCurrentPriceAsync(coins);
+            var currentPrices = await _informationProcessService.CalculateCurrentPriceOfCoinAsync(coins);
 
             foreach (var coin in coins)
                 coin.CurrentPrice = currentPrices[coin.Id];

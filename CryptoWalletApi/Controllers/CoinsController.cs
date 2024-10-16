@@ -70,26 +70,26 @@ namespace CryptoWalletApi.Controllers
             return successfullyAdded ? Ok("Good coins added successfully.") : StatusCode(500, "Error adding good coins.");
         }
 
-        [HttpPost("upload-deep")]
-        public async Task<ActionResult> UploadPortfolioWithDeepSearch([FromBody] CheckedCoinsDTO allCoins)
-        {
-            if (allCoins == null || (allCoins.BadCoins.Count == 0 && allCoins.GoodCoins.Count == 0))
-                return BadRequest("No good coins provided.");
+        //[HttpPost("upload-deep")]
+        //public async Task<ActionResult> UploadPortfolioWithDeepSearch([FromBody] CheckedCoinsDTO allCoins)
+        //{
+        //    if (allCoins == null || (allCoins.BadCoins.Count == 0 && allCoins.GoodCoins.Count == 0))
+        //        return BadRequest("No good coins provided.");
 
-            CheckedCoinsDTO checkedCoins = await _informationProcessService.DeepCheckValidityOfCoinViewModels(allCoins);
+        //    CheckedCoinsDTO checkedCoins = await _informationProcessService.DeepCheckValidityOfCoinViewModels(allCoins);
 
-            if (checkedCoins.BadCoins.Count > 0)
-            {
-                return StatusCode(206, new
-                {
-                    goodCoins = checkedCoins.GoodCoins,
-                    badCoins = checkedCoins.BadCoins,
-                });
-            }
+        //    if (checkedCoins.BadCoins.Count > 0)
+        //    {
+        //        return StatusCode(206, new
+        //        {
+        //            goodCoins = checkedCoins.GoodCoins,
+        //            badCoins = checkedCoins.BadCoins,
+        //        });
+        //    }
 
-            var successfullyAdded = await _dbManager.SeedDbWithCoinsFileAsync(checkedCoins.GoodCoins);
-            return successfullyAdded ? Ok("Good coins added successfully.") : StatusCode(500, "Error adding good coins.");
-        }
+        //    var successfullyAdded = await _dbManager.SeedDbWithCoinsFileAsync(checkedCoins.GoodCoins);
+        //    return successfullyAdded ? Ok("Good coins added successfully.") : StatusCode(500, "Error adding good coins.");
+        //}
 
         [HttpDelete("clear")]
         public async Task<ActionResult> ClearPortfolio()

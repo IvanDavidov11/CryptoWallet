@@ -32,6 +32,9 @@ namespace CryptoWalletApi.Services
             }
         }
 
+        /// <summary>
+        /// Gets 100 coins from CoinLore and verifies coinsToCheck against them.
+        /// </summary>
         public async Task<Dictionary<CoinDatabaseModel, bool>> VerifyCoinsAgainstApiAsync(ICollection<CoinDatabaseModel> coinsToCheck, int urlIndex = 0)
         {
             var request = new HttpRequestMessage
@@ -73,30 +76,32 @@ namespace CryptoWalletApi.Services
             }
         }
 
-        public async Task<Dictionary<CoinDatabaseModel, bool>> DeepVerifyCoinsAgainstApiAsync(ICollection<CoinDatabaseModel> badCoinsToCheck)
+        /// <summary>
+        /// Loops through all the coins in CoinLore until it verifies all coinsToCheck, or it reaches the end.
+        /// </summary>
+        public async Task<Dictionary<CoinDatabaseModel, bool>> VerifyAgainstAllCoinsInApi(ICollection<CoinDatabaseModel> coinsToCheck)
         {
             int amountOfCoinsInCoinLore = (await GetGlobalDataFromApiAsync()).CoinsCount;
             Dictionary<CoinDatabaseModel, bool> overallCheckedCoins = new();
 
             for (int index = 0; index < amountOfCoinsInCoinLore; index += 100)
             {
-                Console.WriteLine(index);
-                var checkedCoins = await VerifyCoinsAgainstApiAsync(badCoinsToCheck, index);
-                var foundCoins = checkedCoins.Where(dto => dto.Value == true);
+                var checkedCoins = await VerifyCoinsAgainstApiAsync(coinsToCheck, index);
+                var verifiedCoins = checkedCoins.Where(dto => dto.Value == true);
 
-                foreach (var foundCoin in foundCoins)
+                foreach (var foundCoin in verifiedCoins)
                 {
                     overallCheckedCoins.Add(foundCoin.Key, foundCoin.Value);
-                    badCoinsToCheck.Remove(foundCoin.Key);
+                    coinsToCheck.Remove(foundCoin.Key);
                 }
 
-                if (!badCoinsToCheck.Any())
+                if (!coinsToCheck.Any())
                     break;
             }
 
-            if (badCoinsToCheck.Any())
+            if (coinsToCheck.Any())
             {
-                foreach (var badCoin in badCoinsToCheck)
+                foreach (var badCoin in coinsToCheck)
                 {
                     overallCheckedCoins.Add(badCoin, false);
                 }

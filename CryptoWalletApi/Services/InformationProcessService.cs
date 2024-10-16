@@ -16,23 +16,25 @@ namespace CryptoWalletApi.Services
             _coinLoreApiManager = new(logger);
         }
 
+        #region Data Validation
+
         public async Task<CheckedCoinsDTO> CheckValidityOfCoinFile(IFormFile file)
         {
             _logger.LogInformation("Attempting to check validity of coin files against CoinLoreApi...");
 
             CheckedCoinsDTO allCoins = await FileReaderAndParser.MapFileToCoinDbModelsAsync(_logger, file);
             _logger.LogInformation("Mapped file data to coin database models. " +
-                $"GoodCoins count: {allCoins.GoodCoins.Count}, BadCoins count: {allCoins.BadCoins.Count}");
+                $"Coins ready to be validated with api count: {allCoins.GoodCoins.Count}, BadCoins count: {allCoins.BadCoins.Count}");
 
-            var checkedCoins = new CheckedCoinsDTO(allCoins.GoodCoins, allCoins.BadCoins);
+            var checkedCoins = new CheckedCoinsDTO(null, allCoins.BadCoins); // we set only bad coins because they can't be checked for validity.
 
-            if (allCoins.GoodCoins.Count == 0 && allCoins.BadCoins.Count == 0)
+            if (allCoins.GoodCoins.Count == 0)
             {
-                _logger.LogWarning("CoinDatabaseModels are empty. Please check if MapFielToCoinsDbModel executed correctly.");
+                _logger.LogWarning("Mapped CoinDatabaseModels are all badly formatted. Exiting execution of validation early...");
                 return checkedCoins;
             }
 
-            _logger.LogInformation($"Verifying {allCoins.GoodCoins.Count} good coins against CoinLore API...");
+            _logger.LogInformation($"Verifying {allCoins.GoodCoins.Count} valid format coins against CoinLore API...");
             Dictionary<CoinDatabaseModel, bool> result = await VerifyCoinsWithCoinLoreApiAsync(allCoins.GoodCoins);
 
             foreach (var coin in result)
@@ -86,7 +88,7 @@ namespace CryptoWalletApi.Services
 
                 if (!coinsToCheck.Any())
                 {
-                    _logger.LogInformation("All coins have been verified. Exiting loopp early.");
+                    _logger.LogInformation("All coins have been verified. Exiting loop early.");
                     break;
                 }
             }
@@ -94,7 +96,7 @@ namespace CryptoWalletApi.Services
             if (coinsToCheck.Any())
             {
                 _logger.LogWarning($"Some coins could not be verified: {coinsToCheck.Count}.");
-                
+
                 foreach (var badCoin in coinsToCheck)
                 {
                     overallCheckedCoins.Add(badCoin, false);
@@ -122,13 +124,8 @@ namespace CryptoWalletApi.Services
                 c => new ApiCoinWithNameAndSymbolDTO(c.Name, c.Symbol),
                 StringComparer.OrdinalIgnoreCase);
 
-            if (coinsToCheck.Count != apiResponseCoins.Count)
-                _logger.LogWarning("Amount of coins to check doesn't match amount of coins in response api.");
-            
-            _logger.LogInformation($"Total coins to check: {coinsToCheck.Count} / Total coins in Api response: {apiResponseCoins.Count}");
-
             Dictionary<CoinDatabaseModel, bool> checkedCoins = new();
-            
+
             foreach (var coin in coinsToCheck)
             {
                 var coinName = coin.Name;
@@ -159,25 +156,84 @@ namespace CryptoWalletApi.Services
             return checkedCoins;
         }
 
+        #endregion
+
+        #region Calculations
+
         public decimal CalculateInitialPortfolioValue(IEnumerable<CoinDatabaseModel> allCoins)
         {
+            _logger.LogInformation("Calculating initial portfolio value...");
+
             decimal initialValue = 0;
 
             foreach (var coin in allCoins)
                 initialValue += (coin.Amount * coin.BuyPrice);
 
+            _logger.LogInformation($"Calculation finished successfully. Initial portfolio value: ${initialValue}.");
             return initialValue;
         }
 
-        public async Task<decimal> CalculateCurrentPortfolioValueAsync(List<CoinDatabaseModel> allCoins)
+
+        public async Task<decimal> CalculateCurrentPortfolioValueAsync(ICollection<CoinDatabaseModel> allCoins)
         {
-            var allCoinPrices = await CalculateCurrentPriceOfCoinAsync(allCoins);
+            _logger.LogInformation("Calculating current portfolio value...");
+
+            var allCoinPrices = await FetchCurrentCoinPricesAsync(allCoins);
             decimal currentValue = 0;
 
-            foreach (var coin in allCoins)
-                currentValue += (coin.Amount * allCoinPrices[coin.Id]);
+            if (allCoins.Count != allCoinPrices.Count)
+                _logger.LogWarning("1 or more coin prices missing.");
 
+            foreach (var coin in allCoins)
+            {
+                if (coin != null && coin.Amount > 0 && allCoinPrices.TryGetValue(coin.Id, out var price))
+                {
+                    currentValue += (coin.Amount * price);
+                }
+                else
+                {
+                    // TODO: add way to return coins without information and notify user.
+                    _logger.LogWarning($"Missing price information for coin: {coin.Name}.");
+                }
+            }
+
+            _logger.LogInformation($"Calculation finished successfully. Current portfolio value: ${currentValue}.");
             return currentValue;
+        }
+
+        public async Task<Dictionary<int, decimal>> FetchCurrentCoinPricesAsync(IEnumerable<CoinDatabaseModel> coins)
+        {
+            _logger.LogInformation("Fetching current prices of coins...");
+
+            ICollection<CoinLoreCoinDTO> coinDTOs = await _coinLoreApiManager
+                .GetCoinsInformationFromApiAsync(coins
+                    .Select(coin => coin.CoinLoreId)
+                    .ToList());
+
+            Dictionary<int, decimal> coinPrices = new();
+            int successfulFetch = 0;
+
+            foreach (var coinDTO in coinDTOs)
+            {
+                _logger.LogInformation("Attempting to match coin infromation from CoinLoreApi to CoinDatabaseModel...");
+                var matchedCoin = coins.FirstOrDefault(coin => coin.CoinLoreId.Equals(coinDTO.Id));
+
+                if (matchedCoin is null)
+                {
+                    _logger.LogWarning("Match of coin information has failed. " +
+                        "Check if sent CoinDatabaseModels have CoinLoreId.");
+
+                    continue;
+                }
+                decimal coinCurrentValue = coinDTO.PriceUsd;
+
+                _logger.LogInformation($"Match was successful. Adding {coinCurrentValue} to all coin prices.");
+                coinPrices.Add(matchedCoin.Id, coinCurrentValue);
+                successfulFetch++;
+            }
+
+            _logger.LogInformation($"Fetched {successfulFetch}/{coins.Count()} coin prices.");
+            return coinPrices;
         }
 
         public Dictionary<int, string> CalculateValuePercentageChangeOfCoins(List<CoinViewModel> coins)
@@ -208,7 +264,9 @@ namespace CryptoWalletApi.Services
             return coinPercentageIncreases;
         }
 
-        public async Task<Dictionary<int, decimal>> CalculateCurrentPriceOfCoinAsync(List<CoinViewModel> coins)
+        #endregion
+
+        public async Task<Dictionary<int, decimal>> GetCoinsCurrentValue(ICollection<CoinViewModel> coins)
         {
             ICollection<CoinLoreCoinDTO> coinDTOs = await _coinLoreApiManager
                 .GetCoinsInformationFromApiAsync(coins
@@ -255,30 +313,7 @@ namespace CryptoWalletApi.Services
                 processedCount++;
             }
 
-            _logger.LogInformation($"Calculation of current coin prices has finished. Processed {processedCount}/{coins.Count} coins.");
-            return coinPrices;
-        }
-
-        public async Task<Dictionary<int, decimal>> CalculateCurrentPriceOfCoinAsync(List<CoinDatabaseModel> coins)
-        {
-            ICollection<CoinLoreCoinDTO> coinDTOs = await _coinLoreApiManager
-                .GetCoinsInformationFromApiAsync(coins
-                    .Select(coin => coin.CoinLoreId)
-                    .ToList());
-
-            Dictionary<int, decimal> coinPrices = new();
-            foreach (var coinDTO in coinDTOs)
-            {
-                var matchedCoin = coins.FirstOrDefault(coin => coin.CoinLoreId.Equals(coinDTO.Id));
-
-                if (matchedCoin is null)
-                    continue; // handle fail of coin match
-
-                decimal coinCurrentValue = coinDTO.PriceUsd;
-
-                coinPrices.Add(matchedCoin.Id, coinCurrentValue);
-            }
-
+            _logger.LogInformation($"Calculation of current coin prices has finished. Processed {processedCount}/{coins.Count()} coins.");
             return coinPrices;
         }
     }

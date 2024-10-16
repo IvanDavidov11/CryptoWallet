@@ -24,7 +24,6 @@ namespace CryptoWalletApi.Controllers
             _viewModelManager = new ViewModelManager(logger, _informationProcessService);
         }
 
-        // GET: api/coins
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CoinViewModel>>> GetCoins()
         {
@@ -73,11 +72,21 @@ namespace CryptoWalletApi.Controllers
             return successfulyAddedToDb ? Ok("Coins added successfully.") : StatusCode(500, "Error adding coins.");
         }
 
+        /// <summary>
+        /// Adds already validated coins to database without validating them.
+        /// </summary>
+        /// <param name="goodCoins">pre-validated coins</param>
         [HttpPost("upload-safe")]
         public async Task<ActionResult> UploadPortfolioWithSafeCoins([FromBody] List<CoinDatabaseModel> goodCoins)
         {
+            _logger.LogInformation($"Entering UploadPortfolioWithSafeCoins method with " +
+                $"{goodCoins.Count} safe coins: {string.Join(", ",goodCoins.Select(coin => coin.Name))}...");
+
             if (goodCoins == null || !goodCoins.Any())
+            {
+                _logger.LogWarning("No good coins sent. Please check front-end code.");
                 return BadRequest("No good coins provided.");
+            }
 
             bool successfullyAdded = await _dbManager.SeedDbWithCoinsFileAsync(goodCoins);
 
@@ -87,6 +96,7 @@ namespace CryptoWalletApi.Controllers
         [HttpDelete("clear")]
         public async Task<ActionResult> ClearPortfolio()
         {
+            _logger.LogInformation("Entering ClearPortfolio method...");
             bool result = await _dbManager.ClearCoinsFromDbAsync();
             return result ? Ok() : BadRequest();
         }

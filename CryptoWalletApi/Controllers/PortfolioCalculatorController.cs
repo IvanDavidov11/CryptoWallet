@@ -22,18 +22,24 @@ namespace CryptoWalletApi.Controllers
         [HttpGet("initial")]
         public async Task<ActionResult> CalculateInitialPortfolioValue()
         {
+            _logger.LogInformation($"Entering CalculateInitialPortfolioValue method");
+
             var coins = await _dbManager.GetOwnedCoinsAsync();
             decimal initialValue = _informationProcessService.CalculateInitialPortfolioValue(coins);
 
+            _logger.LogInformation("Sending initial value to front-end.");
             return Ok(initialValue);
         }
 
         [HttpGet("current")]
         public async Task<ActionResult> CalculateCurrentPortfolioValue()
         {
-            var coins = await _dbManager.GetOwnedCoinsAsync();
-            decimal currentValue = await _informationProcessService.CalculateCurrentPortfolioValueAsync(coins.ToList());
+            _logger.LogInformation($"Entering CalculateCurrentPortfolioValue method");
 
+            var coins = await _dbManager.GetOwnedCoinsAsync();
+            decimal currentValue = await _informationProcessService.CalculateCurrentPortfolioValueAsync(coins);
+
+            _logger.LogInformation("Sending current portfolio value to front-end.");
             return Ok(currentValue);
         }
     }

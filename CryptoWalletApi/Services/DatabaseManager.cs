@@ -1,5 +1,6 @@
 ﻿using CryptoWalletApi.Data;
 using CryptoWalletApi.Data.DbModels;
+using CryptoWalletApi.DataTransferObjects;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
@@ -35,19 +36,26 @@ namespace CryptoWalletApi.Services
 
         public async Task<UserPreferencesDatabaseModel> GetUserPreferencesAsync()
         {
+            _logger.LogInformation("Attempting to fetch UserPreferences...");
+
             if (!DbHasUserPreferences())
                 await AddInitialUserPreferencesAsync();
 
-            var userPreferences = await _dbContext.UserPreferences.FirstOrDefaultAsync(); // log error for null return
-            // Log an error for null return, if needed
+            if(DbHasUserPreferences())
+            {
+                var userPreferences = _dbContext.UserPreferences.FirstOrDefault();
+                _logger.LogInformation("UserPreferences fetched successfully.");
+                return userPreferences;
+            }
 
-            return userPreferences;
+            _logger.LogInformation("Failed fetching UserPreferences. Check database initialization and UserPreferencesDatabaseModel.");
+            return null;
         }
 
         public bool DbHasCoins()
         {
             _logger.LogInformation("Attempting to check if Database has any saved coins in the coins table...");
-            
+
             if (!_dbContext.Coins.Any())
             {
                 _logger.LogWarning("Database has no saved coins in coin table, returning false.");
@@ -107,34 +115,45 @@ namespace CryptoWalletApi.Services
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
-                _logger.LogWarning("Failed to add UserPreferences to database.");
+                _logger.LogError($"An error occurred: {ex.GetType().Name} - {ex.Message}");
                 return false;
             }
         }
 
         public async Task<bool> UpdateRefreshIntervalOfUser(int refreshInterval)
         {
+            _logger.LogInformation("Attempting to update UserPreferences.");
+
             try
             {
                 var userPreferences = await GetUserPreferencesAsync();
                 userPreferences.RefreshInterval = refreshInterval;
                 await _dbContext.SaveChangesAsync();
+                _logger.LogInformation("Update to UserPreferences finished successfully.");
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError($"An error occurred: {ex.GetType().Name} - {ex.Message}");
                 return false;
             }
         }
 
         public async Task<bool> ClearCoinsFromDbAsync()
         {
+            _logger.LogInformation("Attempting to delete all coins from database coin table...");
             _dbContext.Coins.RemoveRange(_dbContext.Coins);
             await _dbContext.SaveChangesAsync();
 
-            return !DbHasCoins(); // if db has no coins, the removal was successful
+            if (DbHasCoins())  // if db has no coins, the removal was successful
+            {
+                _logger.LogError("Removal of all coins from database has failed.");
+            }
+
+            _logger.LogInformation("Successfully removed all coins from database.");
+            return true;
         }
     }
 }

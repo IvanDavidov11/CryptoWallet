@@ -66,7 +66,7 @@ namespace CryptoWalletApi.Services
         /// <param name="urlIndex">starting point of coins of api call</param>
         public async Task<List<CoinLoreCoinDTO>> GetCoinsFromApiAsync(int urlIndex = 0)
         {
-            _logger.LogInformation($"Starting request to CoinLore Api for 100 coins starting at index {urlIndex}.");
+            _logger.LogInformation($"Starting request to CoinLore Api for 100 coins starting at index {urlIndex}."); // TODO: fix logging spam...
 
             var request = new HttpRequestMessage
             {

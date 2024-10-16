@@ -10,7 +10,16 @@ namespace CryptoWalletApi.Services
         private const string CoinLoreGlobalDataUri = @"https://api.coinlore.net/api/global/";
         private const string CoinLoreGetCoinsUri = @" https://api.coinlore.net/api/tickers/";
         private const string CoinLoreGetSpecificCoinUrl = @"https://api.coinlore.net/api/ticker/?id=";
+        private ILogger _logger;
 
+        public CoinLoreApiManager(ILogger logger)
+        {
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Returns a DTO with GlobalData from CoinLoreApi
+        /// </summary>
         public async Task<CoinLoreGlobalDataDTO> GetGlobalDataFromApiAsync()
         {
             var request = new HttpRequestMessage
@@ -33,9 +42,10 @@ namespace CryptoWalletApi.Services
         }
 
         /// <summary>
-        /// Gets 100 coins from CoinLore and verifies coinsToCheck against them.
+        /// Returns 100 coins from CoinLoreApi database.
         /// </summary>
-        public async Task<Dictionary<CoinDatabaseModel, bool>> VerifyCoinsAgainstApiAsync(ICollection<CoinDatabaseModel> coinsToCheck, int urlIndex = 0)
+        /// <param name="urlIndex">starting point of coins for api call</param>
+        public async Task<List<CoinLoreCoinDTO>> GetCoinsFromApiAsync(int urlIndex = 0)
         {
             var request = new HttpRequestMessage
             {
@@ -45,85 +55,22 @@ namespace CryptoWalletApi.Services
 
             using (var response = await _client.SendAsync(request))
             {
-                List<CoinLoreCoinDTO> allApiCoins = await GetAllCoinsFromApiAsync(response);
+                response.EnsureSuccessStatusCode();
 
-                var apiCoinDictionaryWithName = allApiCoins.ToDictionary(c => c.Id, c => c.Name, StringComparer.OrdinalIgnoreCase);
-                var apiCoinDictionaryWithSymbol = allApiCoins.ToDictionary(c => c.Id, c => c.Symbol,StringComparer.OrdinalIgnoreCase);
+                var body = await response.Content.ReadAsStringAsync();
 
-                Dictionary<CoinDatabaseModel, bool> checkedCoins = new();
+                if (string.IsNullOrEmpty(body))
+                    throw new Exception();
 
-                foreach (var coin in coinsToCheck)
-                {
-                    var coinName = coin.Name;
-                    bool coinFound = false;
-
-                    foreach (var apiCoin in apiCoinDictionaryWithName)
-                    {
-                        if (apiCoin.Value == coinName || apiCoinDictionaryWithSymbol[apiCoin.Key] == coinName)
-                        {
-                            coin.CoinLoreId = apiCoin.Key;
-                            checkedCoins.Add(coin, true);
-                            coinFound = true;
-                            break;
-                        }
-                    }
-
-                    if (!coinFound)
-                        checkedCoins.Add(coin, false);
-                }
-
-                return checkedCoins;
+                var allCoins = JsonConvert.DeserializeObject<ApiResponseCoinsDTO>(body).AllCoins;
+                return allCoins;
             }
         }
 
         /// <summary>
-        /// Loops through all the coins in CoinLore until it verifies all coinsToCheck, or it reaches the end.
+        /// Returns information DTO for a single coin.
         /// </summary>
-        public async Task<Dictionary<CoinDatabaseModel, bool>> VerifyAgainstAllCoinsInApi(ICollection<CoinDatabaseModel> coinsToCheck)
-        {
-            int amountOfCoinsInCoinLore = (await GetGlobalDataFromApiAsync()).CoinsCount;
-            Dictionary<CoinDatabaseModel, bool> overallCheckedCoins = new();
-
-            for (int index = 0; index < amountOfCoinsInCoinLore; index += 100)
-            {
-                var checkedCoins = await VerifyCoinsAgainstApiAsync(coinsToCheck, index);
-                var verifiedCoins = checkedCoins.Where(dto => dto.Value == true);
-
-                foreach (var foundCoin in verifiedCoins)
-                {
-                    overallCheckedCoins.Add(foundCoin.Key, foundCoin.Value);
-                    coinsToCheck.Remove(foundCoin.Key);
-                }
-
-                if (!coinsToCheck.Any())
-                    break;
-            }
-
-            if (coinsToCheck.Any())
-            {
-                foreach (var badCoin in coinsToCheck)
-                {
-                    overallCheckedCoins.Add(badCoin, false);
-                }
-            }
-
-            return overallCheckedCoins;
-        }
-
-        private async Task<List<CoinLoreCoinDTO>> GetAllCoinsFromApiAsync(HttpResponseMessage response)
-        {
-            response.EnsureSuccessStatusCode();
-
-            var body = await response.Content.ReadAsStringAsync();
-
-            if (string.IsNullOrEmpty(body))
-                throw new Exception();
-
-            var allCoins = JsonConvert.DeserializeObject<ApiResponseCoinsDTO>(body).AllCoins;
-            return allCoins;
-        }
-
-        public async Task<CoinLoreCoinDTO> GetCoinInformationFromApiAsync(string coinLoreId)
+        public async Task<CoinLoreCoinDTO> GetSingleCoinInformationFromApiAsync(string coinLoreId)
         {
             var request = new HttpRequestMessage
             {
@@ -148,28 +95,53 @@ namespace CryptoWalletApi.Services
             }
         }
 
+        /// <summary>
+        /// Returns collection of information DTOs for many coins.
+        /// </summary>
         public async Task<ICollection<CoinLoreCoinDTO>> GetCoinsInformationFromApiAsync(ICollection<string> coinLoreIds)
         {
+            _logger.LogInformation("Getting Coins information from CoinLore Api...");
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
                 RequestUri = new Uri(CoinLoreGetSpecificCoinUrl + string.Join(',', coinLoreIds))
             };
 
+            _logger.LogInformation("Attempting to send request to CoinLoreApi...");
             using (var response = await _client.SendAsync(request))
             {
-                response.EnsureSuccessStatusCode();
-                var body = await response.Content.ReadAsStringAsync();
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                    _logger.LogInformation($"Request succeeded. Status code: {response.StatusCode}");
+                    _logger.LogInformation("Attempting to read information...");
+                    var body = await response.Content.ReadAsStringAsync();
 
-                if (string.IsNullOrEmpty(body))
-                    throw new Exception();
+                    if (string.IsNullOrEmpty(body))
+                    {
+                        _logger.LogWarning("Response body is empty.");
+                        return new List<CoinLoreCoinDTO>();
+                    }
 
-                var allResponseCoinsDTO = JsonConvert.DeserializeObject<List<CoinLoreCoinDTO>>(body);
+                    _logger.LogInformation($"Information read successfully: {body}");
+                    _logger.LogInformation($"Attempting to deserialize json response into List<CoinLoreCoinDTO>...");
+                    var allResponseCoinsDTO = JsonConvert.DeserializeObject<List<CoinLoreCoinDTO>>(body);
 
-                if (allResponseCoinsDTO is null)
-                    throw new Exception();
+                    if (allResponseCoinsDTO is null)
+                    {
+                        _logger.LogWarning("Deserialization returned null. Response might not be in expected format.");
+                        return new List<CoinLoreCoinDTO>();
+                    }
 
-                return allResponseCoinsDTO;
+                    _logger.LogInformation($"Response successfully deserialized into expected format.");
+                    _logger.LogInformation($"Successfully retrieved {allResponseCoinsDTO.Count} coins.");
+                    return allResponseCoinsDTO;
+                }
+                catch (Exception err)
+                {
+                    _logger.LogError($"An error occurred: {err.GetType().Name} - {err.Message}");
+                    return new List<CoinLoreCoinDTO>();
+                }
             }
         }
     }

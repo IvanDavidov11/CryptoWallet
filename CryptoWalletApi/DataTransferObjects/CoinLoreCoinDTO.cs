@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 
 namespace CryptoWalletApi.DataTransferObjects
 {
@@ -71,6 +69,11 @@ namespace CryptoWalletApi.DataTransferObjects
 
         [JsonProperty("msupply")]
         public string? Msupply { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name}-CoinLoreId:({Id})";
+        }
     }
 
     public class InfoDTO

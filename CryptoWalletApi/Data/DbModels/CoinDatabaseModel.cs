@@ -20,5 +20,10 @@ namespace CryptoWalletApi.Data.DbModels
 
         // is used to get data from coinlore api.
         public required string CoinLoreId { get; set; } = string.Empty;
+
+        public override string ToString()
+        {
+            return $"Coin Name: {Name}, Amount: {Amount}, Buy price: {BuyPrice}";
+        }
     }
 }

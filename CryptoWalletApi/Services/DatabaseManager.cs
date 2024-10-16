@@ -1,6 +1,7 @@
 ﻿using CryptoWalletApi.Data;
 using CryptoWalletApi.Data.DbModels;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace CryptoWalletApi.Services
 {
@@ -17,12 +18,23 @@ namespace CryptoWalletApi.Services
 
         public async Task<ICollection<CoinDatabaseModel>> GetOwnedCoinsAsync()
         {
-            return await _dbContext.Coins.ToListAsync();
+            _logger.LogInformation("Attempting to get all owned coins in database...");
+            var coins = await _dbContext.Coins.ToListAsync();
+
+            if (coins is null || !coins.Any())
+            {
+                _logger.LogWarning("No coins found in database. Please check if database is initialized properly.");
+                return new List<CoinDatabaseModel>();
+            }
+
+            string successMessage = $"{coins.Count} Coins fetched successfully: ({string.Join(", ", coins.Select(coin => coin.ToString()))}).";
+            _logger.LogInformation(successMessage);
+            return coins;
         }
 
         public async Task<UserPreferencesDatabaseModel> GetUserPreferencesAsync()
         {
-            if(!DbHasUserPreferences())
+            if (!DbHasUserPreferences())
                 await AddInitialUserPreferencesAsync();
 
             var userPreferences = await _dbContext.UserPreferences.FirstOrDefaultAsync(); // log error for null return

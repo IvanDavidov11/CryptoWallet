@@ -21,7 +21,7 @@ namespace CryptoWalletApi.Controllers
             _logger = logger;
             _dbManager = new DatabaseManager(context, logger);
             _informationProcessService = new InformationProcessService(logger);
-            _viewModelManager = new ViewModelManager(_informationProcessService);
+            _viewModelManager = new ViewModelManager(logger, _informationProcessService);
         }
 
         // GET: api/coins
@@ -30,10 +30,13 @@ namespace CryptoWalletApi.Controllers
         {
             _logger.LogInformation("Entering GetCoins method...");
 
-            IEnumerable<CoinViewModel>? coins = await _viewModelManager.GenerateCoinViewModelsAsync(_dbManager);
+            IEnumerable<CoinViewModel>? coins = await _viewModelManager.MapDatabaseModelsToViewModelsAsync(_dbManager);
 
             if (coins is null)
-                return NoContent(); // log error
+            {
+                _logger.LogError("CoinViewModels couldn't be generated.");
+                return NoContent();
+            }
 
             return Ok(coins);
         }

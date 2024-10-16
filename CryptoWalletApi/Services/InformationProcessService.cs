@@ -18,27 +18,39 @@ namespace CryptoWalletApi.Services
 
         public async Task<CheckedCoinsDTO> CheckValidityOfCoinFile(IFormFile file)
         {
-            List<CoinDatabaseModel> allCoins = await FileReaderAndParser.MapFileToCoinDbModelsAsync(file);
-            List<CoinDatabaseModel> goodCoins = new();
-            List<CoinDatabaseModel> badCoins = new();
-            var checkedCoins = new CheckedCoinsDTO(goodCoins, badCoins);
+            _logger.LogInformation("Attempting to check validity of coin files against CoinLoreApi...");
 
-            if (allCoins == null || allCoins.Count == 0)
+            CheckedCoinsDTO allCoins = await FileReaderAndParser.MapFileToCoinDbModelsAsync(_logger, file);
+            _logger.LogInformation("Mapped file data to coin database models. " +
+                $"GoodCoins count: {allCoins.GoodCoins.Count}, BadCoins count: {allCoins.BadCoins.Count}");
+
+            var checkedCoins = new CheckedCoinsDTO(allCoins.GoodCoins, allCoins.BadCoins);
+
+            if (allCoins.GoodCoins.Count == 0 && allCoins.BadCoins.Count == 0)
+            {
+                _logger.LogWarning("CoinDatabaseModels are empty. Please check if MapFielToCoinsDbModel executed correctly.");
                 return checkedCoins;
+            }
 
-            Dictionary<CoinDatabaseModel, bool> result = await VerifyCoinsWithCoinLoreApiAsync(allCoins);
+            _logger.LogInformation($"Verifying {allCoins.GoodCoins.Count} good coins against CoinLore API...");
+            Dictionary<CoinDatabaseModel, bool> result = await VerifyCoinsWithCoinLoreApiAsync(allCoins.GoodCoins);
 
             foreach (var coin in result)
             {
                 if (coin.Value == true)
                 {
                     checkedCoins.GoodCoins.Add(coin.Key);
+                    _logger.LogInformation($"Coin {coin.Key.Name} is valid and added to GoodCoins.");
                 }
                 else
                 {
                     checkedCoins.BadCoins.Add(coin.Key);
+                    _logger.LogInformation($"Coin {coin.Key.Name} is invalid and added to BadCoins.");
                 }
             }
+
+            _logger.LogInformation($"Finished checking validity of coin files. " +
+                $"Total GoodCoins: {checkedCoins.GoodCoins.Count}, Total BadCoins: {checkedCoins.BadCoins.Count}");
 
             return checkedCoins;
         }
@@ -48,12 +60,20 @@ namespace CryptoWalletApi.Services
         /// </summary>
         public async Task<Dictionary<CoinDatabaseModel, bool>> VerifyCoinsWithCoinLoreApiAsync(ICollection<CoinDatabaseModel> coinsToCheck)
         {
+            _logger.LogInformation("Attempting to verify coins with CoinLore Api...");
+
             int amountOfCoinsInCoinLore = (await _coinLoreApiManager.GetGlobalDataFromApiAsync()).CoinsCount;
+            _logger.LogInformation($"Total coins in CoinLore Api: {amountOfCoinsInCoinLore}");
+
             Dictionary<CoinDatabaseModel, bool> overallCheckedCoins = new();
 
             for (int index = 0; index < amountOfCoinsInCoinLore; index += 100)
             {
+                _logger.LogInformation($"Fetching coins from CoinLore Api starting at index: {index}");
+
                 List<CoinLoreCoinDTO> responseApiCoins = await _coinLoreApiManager.GetCoinsFromApiAsync(index);
+
+                _logger.LogInformation("Verifying coins against Api response...");
                 Dictionary<CoinDatabaseModel, bool> checkedCoins = VerifyCoinsAgainstApiResponse(coinsToCheck, responseApiCoins);
                 IEnumerable<KeyValuePair<CoinDatabaseModel, bool>> verifiedCoins = checkedCoins.Where(dto => dto.Value == true);
 
@@ -61,17 +81,29 @@ namespace CryptoWalletApi.Services
                 {
                     overallCheckedCoins.Add(verifiedCoin.Key, verifiedCoin.Value);
                     coinsToCheck.Remove(verifiedCoin.Key);
+                    _logger.LogInformation($"Coin: {verifiedCoin.Key.Name} has been verified and is removed from coinsToCheck collection.");
                 }
 
                 if (!coinsToCheck.Any())
+                {
+                    _logger.LogInformation("All coins have been verified. Exiting loopp early.");
                     break;
+                }
             }
 
             if (coinsToCheck.Any())
             {
+                _logger.LogWarning($"Some coins could not be verified: {coinsToCheck.Count}.");
+                
                 foreach (var badCoin in coinsToCheck)
+                {
                     overallCheckedCoins.Add(badCoin, false);
+                    _logger.LogInformation($"Adding unverified coin: {badCoin.Name} to BadCoin collection.");
+                }
             }
+
+            _logger.LogInformation($"Attempt to verify coins has completed. " +
+                $"Coins successfully verified: {overallCheckedCoins.Count(coin => coin.Value == true)}.");
 
             return overallCheckedCoins;
         }
@@ -83,17 +115,25 @@ namespace CryptoWalletApi.Services
             ICollection<CoinDatabaseModel> coinsToCheck,
             ICollection<CoinLoreCoinDTO> apiResponseCoins)
         {
+            _logger.LogInformation("Starting verification of coins against Api response...");
+
             Dictionary<string, ApiCoinWithNameAndSymbolDTO> apiResponseCoinWithNameAndSymbol = apiResponseCoins.ToDictionary(
                 c => c.Id,
                 c => new ApiCoinWithNameAndSymbolDTO(c.Name, c.Symbol),
                 StringComparer.OrdinalIgnoreCase);
 
-            var apiCoinDictionaryWithSymbol = apiResponseCoins.ToDictionary(c => c.Id, c => c.Symbol, StringComparer.OrdinalIgnoreCase);
-            Dictionary<CoinDatabaseModel, bool> checkedCoins = new();
+            if (coinsToCheck.Count != apiResponseCoins.Count)
+                _logger.LogWarning("Amount of coins to check doesn't match amount of coins in response api.");
+            
+            _logger.LogInformation($"Total coins to check: {coinsToCheck.Count} / Total coins in Api response: {apiResponseCoins.Count}");
 
+            Dictionary<CoinDatabaseModel, bool> checkedCoins = new();
+            
             foreach (var coin in coinsToCheck)
             {
                 var coinName = coin.Name;
+                _logger.LogInformation($"Verifying coin: {coinName}");
+
                 bool coinFound = false;
 
                 foreach (var apiCoin in apiResponseCoinWithNameAndSymbol)
@@ -103,14 +143,19 @@ namespace CryptoWalletApi.Services
                         coin.CoinLoreId = apiCoin.Key;
                         checkedCoins.Add(coin, true);
                         coinFound = true;
+                        _logger.LogInformation($"Match found for coin: {coinName}. CoinLoreId set to: {apiCoin.Key}");
                         break;
                     }
                 }
 
                 if (!coinFound)
+                {
                     checkedCoins.Add(coin, false);
+                    _logger.LogWarning($"No match found for coin: {coinName}.");
+                }
             }
 
+            _logger.LogInformation($"Verification complete. Total checked coins: {checkedCoins.Count}.");
             return checkedCoins;
         }
 
@@ -155,7 +200,7 @@ namespace CryptoWalletApi.Services
                 string percentage = $"{(change * 100):F2}%"; // format to second decimal of percent
                 coinPercentageIncreases.Add(coin.Id, percentage);
 
-                _logger.LogInformation($"Coin: {coin.Name} percentage change calculated as %{percentage}");
+                _logger.LogInformation($"Coin: {coin.Name} percentage change calculated as {percentage}");
                 processedCount++;
             }
 
@@ -183,7 +228,7 @@ namespace CryptoWalletApi.Services
 
             if (!coinDTOs.Any())
             {
-                _logger.LogWarning("No coin information was retrieved from the API.");
+                _logger.LogWarning("No coin information was retrieved from the Api.");
                 return coinPrices;
             }
 

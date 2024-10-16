@@ -45,16 +45,21 @@ namespace CryptoWalletApi.Controllers
         [HttpGet("has-coins")]
         public ActionResult<bool> HasCoins()
         {
+            _logger.LogInformation("Entering HasCoins method...");
             return Ok(_dbManager.DbHasCoins());
         }
 
         [HttpPost("upload")]
         public async Task<ActionResult> UploadPortfolio(IFormFile file)
         {
+            _logger.LogInformation($"Entering UploadPortfolio method with file: {file}");
+
             CheckedCoinsDTO checkedCoins = await _informationProcessService.CheckValidityOfCoinFile(file);
 
             if (checkedCoins.BadCoins.Count > 0)
             {
+                _logger.LogWarning("Bad coins detected. Sending partial content code (206) with both good and bad coins to front-end.");
+
                 return StatusCode(206, new
                 {
                     goodCoins = checkedCoins.GoodCoins,
@@ -62,6 +67,7 @@ namespace CryptoWalletApi.Controllers
                 });
             }
 
+            _logger.LogInformation("All coins have been validated with CoinLore Api. Attempting to save them to database...");
             bool successfulyAddedToDb = await _dbManager.SeedDbWithCoinsFileAsync(checkedCoins.GoodCoins);
 
             return successfulyAddedToDb ? Ok("Coins added successfully.") : StatusCode(500, "Error adding coins.");

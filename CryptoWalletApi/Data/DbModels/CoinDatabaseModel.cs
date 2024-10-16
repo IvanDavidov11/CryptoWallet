@@ -1,5 +1,6 @@
 ﻿using CryptoWalletApi.Interfaces;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CryptoWalletApi.Data.DbModels
 {
@@ -13,13 +14,16 @@ namespace CryptoWalletApi.Data.DbModels
         public required string Name { get; set; }
 
         [Required]
-        public decimal Amount { get; set; }
+        public decimal Amount { get; set; } = 0;
 
         [Required]
-        public decimal BuyPrice { get; set; }
+        public decimal BuyPrice { get; set; } = 0;
 
         // is used to get data from coinlore api.
-        public required string CoinLoreId { get; set; } = string.Empty;
+        public string CoinLoreId { get; set; } = string.Empty;
+
+        [NotMapped]
+        public bool IsValid { get; set; } = true;
 
         public override string ToString()
         {

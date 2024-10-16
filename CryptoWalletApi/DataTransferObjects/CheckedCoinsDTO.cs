@@ -7,10 +7,10 @@ namespace CryptoWalletApi.DataTransferObjects
         public ICollection<CoinDatabaseModel> GoodCoins { get; set; }
         public ICollection<CoinDatabaseModel> BadCoins { get; set; }
 
-        public CheckedCoinsDTO(ICollection<CoinDatabaseModel> goodCoins, ICollection<CoinDatabaseModel> badCoins)
+        public CheckedCoinsDTO(ICollection<CoinDatabaseModel> goodCoins = null, ICollection<CoinDatabaseModel> badCoins = null)
         {
-            GoodCoins = goodCoins;
-            BadCoins = badCoins;
+            GoodCoins = goodCoins ?? new List<CoinDatabaseModel>();
+            BadCoins = badCoins ?? new List<CoinDatabaseModel>();
         }
     }
 }

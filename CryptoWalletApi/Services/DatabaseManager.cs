@@ -2,6 +2,7 @@
 using CryptoWalletApi.Data.DbModels;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 
 namespace CryptoWalletApi.Services
 {
@@ -18,16 +19,16 @@ namespace CryptoWalletApi.Services
 
         public async Task<ICollection<CoinDatabaseModel>> GetOwnedCoinsAsync()
         {
-            _logger.LogInformation("Attempting to get all owned coins in database...");
+            _logger.LogInformation("| | | Attempting to get all owned coins in database...");
             var coins = await _dbContext.Coins.ToListAsync();
 
             if (coins is null || !coins.Any())
             {
-                _logger.LogWarning("No coins found in database. Please check if database is initialized properly.");
+                _logger.LogWarning("| | | No coins found in database. Please check if database is initialized properly.");
                 return new List<CoinDatabaseModel>();
             }
 
-            string successMessage = $"{coins.Count} Coins fetched successfully: ({string.Join(", ", coins.Select(coin => coin.ToString()))}).";
+            string successMessage = $"| | | {coins.Count} Coins fetched successfully: ({string.Join(", ", coins.Select(coin => coin.ToString()))}).";
             _logger.LogInformation(successMessage);
             return coins;
         }
@@ -45,26 +46,48 @@ namespace CryptoWalletApi.Services
 
         public bool DbHasCoins()
         {
-            return _dbContext.Coins.Count() > 0;
+            _logger.LogInformation("Attempting to check if Database has any saved coins in the coins table...");
+            
+            if (!_dbContext.Coins.Any())
+            {
+                _logger.LogWarning("Database has no saved coins in coin table, returning false.");
+                return false;
+            }
+
+            _logger.LogInformation("Database has saved coins in coin table, returning true.");
+            return true;
         }
 
         public bool DbHasUserPreferences()
         {
-            return _dbContext.UserPreferences.Count() > 0;
+            _logger.LogInformation("Attempting to check if Database has entry in UserPreferences table...");
+            if (!_dbContext.UserPreferences.Any())
+            {
+                _logger.LogWarning("UserPreferences not found in database, returning false.");
+                return false;
+            }
+
+            _logger.LogInformation("UserPreferences found in database, returning true.");
+            return true;
         }
 
         public async Task<bool> SeedDbWithCoinsFileAsync(ICollection<CoinDatabaseModel> coinModels)
         {
             try
             {
+                _logger.LogInformation($"Attempting to add {coinModels.Count} coins to database...");
                 await _dbContext.Coins.AddRangeAsync(coinModels);
                 await _dbContext.SaveChangesAsync();
+                _logger.LogInformation($"Added coins to database successfully.");
+
                 await AddInitialUserPreferencesAsync();
 
+                _logger.LogInformation($"Database is seeded correctly.");
                 return true;
             }
             catch
             {
+                _logger.LogError($"Failed to add coins to database.");
                 return false;
             }
         }
@@ -74,16 +97,19 @@ namespace CryptoWalletApi.Services
             if (DbHasUserPreferences())
                 return false;
 
+            _logger.LogInformation("Initial user preferences are missing. Attempting to add them to the database...");
             var userPreferences = new UserPreferencesDatabaseModel();
             try
             {
                 await _dbContext.UserPreferences.AddAsync(userPreferences);
                 await _dbContext.SaveChangesAsync();
+                _logger.LogInformation("UserPreferences successfully added to database.");
 
                 return true;
             }
             catch
             {
+                _logger.LogWarning("Failed to add UserPreferences to database.");
                 return false;
             }
         }

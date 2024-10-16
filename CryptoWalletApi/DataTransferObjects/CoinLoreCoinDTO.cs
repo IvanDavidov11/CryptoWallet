@@ -1,10 +1,13 @@
 ﻿using Newtonsoft.Json;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace CryptoWalletApi.DataTransferObjects
 {
     public class CoinLoreCoinDTO
     {
+        private decimal priceUsd;
+
         [JsonProperty("id")]
         public required string Id { get; set; }
 
@@ -21,37 +24,53 @@ namespace CryptoWalletApi.DataTransferObjects
         public int? Rank { get; set; }
 
         [JsonProperty("price_usd")]
-        public decimal PriceUsd { get; set; }
+        public string PriceUsdString
+        {
+            get => priceUsd.ToString();
+            set
+            {
+                if (decimal.TryParse(value, out var result))
+                {
+                    priceUsd = result;
+                }
+                else
+                {
+                    priceUsd = 0;
+                }
+            }
+        }
+
+        public decimal PriceUsd => priceUsd;
 
         [JsonProperty("percent_change_24h")]
-        public decimal? PercentChange24h { get; set; }
+        public string? PercentChange24h { get; set; }
 
         [JsonProperty("percent_change_1h")]
-        public decimal? PercentChange1h { get; set; }
+        public string? PercentChange1h { get; set; }
 
         [JsonProperty("percent_change_7d")]
-        public decimal? PercentChange7d { get; set; }
+        public string? PercentChange7d { get; set; }
 
         [JsonProperty("price_btc")]
-        public decimal PriceBtc { get; set; }
+        public string? PriceBtc { get; set; }
 
         [JsonProperty("market_cap_usd")]
-        public decimal? MarketCapUsd { get; set; }
+        public string? MarketCapUsd { get; set; }
 
         [JsonProperty("volume24")]
-        public decimal? Volume24 { get; set; }
+        public string? Volume24 { get; set; }
 
         [JsonProperty("volume24a")]
-        public decimal? Volume24a { get; set; }
+        public string? Volume24a { get; set; }
 
         [JsonProperty("csupply")]
-        public decimal? Csupply { get; set; }
+        public string? Csupply { get; set; }
 
         [JsonProperty("tsupply")]
-        public decimal? Tsupply { get; set; }
+        public string? Tsupply { get; set; }
 
         [JsonProperty("msupply")]
-        public decimal? Msupply { get; set; }
+        public string? Msupply { get; set; }
     }
 
     public class InfoDTO
@@ -71,4 +90,5 @@ namespace CryptoWalletApi.DataTransferObjects
         [JsonProperty("info")]
         public InfoDTO? Info { get; set; }
     }
+
 }

@@ -26,7 +26,7 @@ namespace CryptoWalletApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CoinViewModel>>> GetCoins()
         {
-            var coins = await _viewModelManager.GenerateCoinViewModelsAsync(_dbManager);
+            IEnumerable<CoinViewModel>? coins = await _viewModelManager.GenerateCoinViewModelsAsync(_dbManager);
 
             if (coins is null)
                 return NoContent(); // log error
@@ -54,7 +54,7 @@ namespace CryptoWalletApi.Controllers
                 });
             }
 
-            var successfulyAddedToDb = await _dbManager.SeedDbWithCoinsFileAsync(checkedCoins.GoodCoins);
+            bool successfulyAddedToDb = await _dbManager.SeedDbWithCoinsFileAsync(checkedCoins.GoodCoins);
 
             return successfulyAddedToDb ? Ok("Coins added successfully.") : StatusCode(500, "Error adding coins.");
         }
@@ -65,15 +65,36 @@ namespace CryptoWalletApi.Controllers
             if (goodCoins == null || !goodCoins.Any())
                 return BadRequest("No good coins provided.");
 
-            var successfullyAdded = await _dbManager.SeedDbWithCoinsFileAsync(goodCoins);
+            bool successfullyAdded = await _dbManager.SeedDbWithCoinsFileAsync(goodCoins);
 
+            return successfullyAdded ? Ok("Good coins added successfully.") : StatusCode(500, "Error adding good coins.");
+        }
+
+        [HttpPost("upload-deep")]
+        public async Task<ActionResult> UploadPortfolioWithDeepSearch([FromBody] CheckedCoinsDTO allCoins)
+        {
+            if (allCoins == null || (allCoins.BadCoins.Count == 0 && allCoins.GoodCoins.Count == 0))
+                return BadRequest("No good coins provided.");
+
+            CheckedCoinsDTO checkedCoins = await _informationProcessService.DeepCheckValidityOfCoinViewModels(allCoins);
+
+            if (checkedCoins.BadCoins.Count > 0)
+            {
+                return StatusCode(206, new
+                {
+                    goodCoins = checkedCoins.GoodCoins,
+                    badCoins = checkedCoins.BadCoins,
+                });
+            }
+
+            var successfullyAdded = await _dbManager.SeedDbWithCoinsFileAsync(checkedCoins.GoodCoins);
             return successfullyAdded ? Ok("Good coins added successfully.") : StatusCode(500, "Error adding good coins.");
         }
 
         [HttpDelete("clear")]
         public async Task<ActionResult> ClearPortfolio()
         {
-            var result = await _dbManager.ClearCoinsFromDbAsync();
+            bool result = await _dbManager.ClearCoinsFromDbAsync();
             return result ? Ok() : BadRequest();
         }
     }

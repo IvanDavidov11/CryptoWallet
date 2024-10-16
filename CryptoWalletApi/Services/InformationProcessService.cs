@@ -1,6 +1,7 @@
 ﻿using CryptoWalletApi.Data.DbModels;
 using CryptoWalletApi.DataTransferObjects;
 using CryptoWalletApi.ViewModels;
+using System.Collections.ObjectModel;
 
 namespace CryptoWalletApi.Services
 {
@@ -18,7 +19,31 @@ namespace CryptoWalletApi.Services
             if (allCoins == null || allCoins.Count == 0)
                 return checkedCoins;
 
-            Dictionary<CoinDatabaseModel, bool> result = await _coinLoreApiManager.TryFindCoinsInApiAsync(allCoins);
+            Dictionary<CoinDatabaseModel, bool> result = await _coinLoreApiManager.VerifyCoinsAgainstApiAsync(allCoins);
+            foreach (var coin in result)
+            {
+                if (coin.Value == true)
+                {
+                    checkedCoins.GoodCoins.Add(coin.Key);
+                }
+                else
+                {
+                    checkedCoins.BadCoins.Add(coin.Key);
+                }
+            }
+
+            return checkedCoins;
+        }
+
+        public async Task<CheckedCoinsDTO> DeepCheckValidityOfCoinViewModels(CheckedCoinsDTO coinsToCheck)
+        {
+            List<CoinDatabaseModel> goodCoins = coinsToCheck.GoodCoins.ToList();
+            List<CoinDatabaseModel> badCoins = new ();
+            var checkedCoins = new CheckedCoinsDTO(goodCoins, badCoins);
+
+            Dictionary<CoinDatabaseModel, bool> result = await _coinLoreApiManager
+                .DeepVerifyCoinsAgainstApiAsync(coinsToCheck.BadCoins);
+
             foreach (var coin in result)
             {
                 if (coin.Value == true)

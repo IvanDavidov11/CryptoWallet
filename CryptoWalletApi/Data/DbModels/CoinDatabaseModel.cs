@@ -19,7 +19,6 @@ namespace CryptoWalletApi.Data.DbModels
         public decimal BuyPrice { get; set; }
 
         // is used to get data from coinlore api.
-        [Required]
-        public required string CoinLoreId { get; set; }
+        public required string CoinLoreId { get; set; } = string.Empty;
     }
 }

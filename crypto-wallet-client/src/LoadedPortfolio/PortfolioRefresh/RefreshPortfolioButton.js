@@ -1,15 +1,16 @@
 import React from 'react'
 
-const RefreshPortfolioButton = ({ fetchCoins }) => {
+const RefreshPortfolioButton = ({ fetchCoins, fetchCurrentValue }) => {
 
-    const handleCoinsReload = () => {
+    const handlePortfolioReload = () => {
         fetchCoins();
+        fetchCurrentValue();
     };
 
     return (
-        <div>
-            <button onClick={handleCoinsReload}>Update Portfolio</button>
-        </div>
+        <>
+            <button className='refreshPortfolioButton' onClick={handlePortfolioReload}>Update Now</button>
+        </>
     )
 }
 

@@ -33,52 +33,50 @@ body {
 }
 
 .table_component {
-  overflow: auto;
-  width: 100%;
-  table-layout: fixed;
+  overflow: hidden;
+  border-radius: 12px;
 }
 
 .table_component table {
-  border: 1px solid #dededf;
-  height: 100%;
-  width: 100%;
+  height: 40vh;
+  width: 40vw;
   table-layout: fixed;
+  border-spacing: 0;
+  border: 2px solid #373737;
   border-collapse: collapse;
-  border-spacing: 1px;
   text-align: center;
 }
 
 .table_component caption {
   caption-side: top;
   text-align: left;
+  margin-bottom: 10px;
 }
 
 .table_component th {
-  border: 1px solid #dededf;
-  background-color: #eceff1;
-  color: #000000;
-  padding: 5px;
+  border: 1px solid #373737;
+  background-color: #212529;
+  color: #AAAA94;
 }
 
 .table_component td {
-  border: 1px solid #dededf;
-  background-color: #ffffff;
-  color: #000000;
-  padding: 5px;
+  border: 1px solid #373737;
+  background-color: #1B1C20;
+  color: #AAAA94;
   width: 100%;
 }
 
 .title {
   font-size: 36px;
-  font-weight: 900;
-  margin:0;
+  font-weight: 800;
+  margin: 0;
   margin-bottom: 15px;
 }
 
 .subtitle {
   font-size: 20px;
   font-weight: 400;
-  margin:0;
+  margin: 0;
   margin-bottom: 40px;
   color: #959595;
 }
@@ -131,4 +129,51 @@ body {
   color: #7c7c7c;
   font-size: 14px;
   margin-top: 10px;
+}
+
+.loadedPortfolioHeader {
+  text-align: left;
+  margin-bottom: 30px;
+}
+
+.refreshPortfolio
+{
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+
+.refreshPortfolio > p
+{
+  color:#959595
+}
+
+.refreshPortfolio > p > strong
+{
+  color: #1A5BBC;
+}
+
+.refreshPortfolioButtons {
+  display: flex;
+  align-items: center;
+}
+
+.refreshPortfolioButtons>* {
+  margin-right: 10px;
+}
+
+.refreshPortfolioButtons > .refreshPortfolioButton {
+  padding: 5px 0px 5px 10px;
+  border-radius: 12px;
+  background-color: #1A5BBC;
+  color:white;
+  cursor: pointer;
+}
+
+.value-positive {
+  color: green;
+}
+
+.value-negative {
+  color: red;
 }

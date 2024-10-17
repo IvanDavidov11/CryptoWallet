@@ -1,32 +1,17 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
-const CurrentPortfolioValue = () => {
-  const calculateCurrent_ApiUrl = "https://localhost:7038/api/calc/current";
-  const [currentValue, setCurrentValue] = useState(0);
-
+const CurrentPortfolioValue = ({ currentValue, fetchCurrentValue }) => {
+  const valueClass = currentValue?.toString().includes('-') ? 'value-negative' : 'value-positive';
+  
   useEffect(() => {
-    const fetchCurrentValue = async () => {
-      try {
-        const response = await fetch(calculateCurrent_ApiUrl);
-
-        if (!response.ok) throw Error('Did not receive expected data');
-
-        const currentValueInJson = await response.json();
-        setCurrentValue(parseFloat(currentValueInJson));
-      }
-      catch (err) {
-        console.log(err);
-      }
-    }
-
     fetchCurrentValue();
   }, []);
 
   return (
-    <div>
+    <div className='portfolio'>
       <h3>Current Value:</h3>
-      <h4>{currentValue} $</h4>
+      <h4 className={valueClass}>${currentValue}</h4>
     </div>
   )
 }

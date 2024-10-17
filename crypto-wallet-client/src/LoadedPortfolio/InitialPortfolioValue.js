@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 const InitialPortfolioValue = () => {
   const calculateInitial_ApiUrl = "https://localhost:7038/api/calc/initial";
-  const [initalValue, setInitialValue] = useState(0);
+  const [initialValue, setInitialValue] = useState(0);
 
   useEffect(() => {
     const fetchInitalValue = async () => {
@@ -19,14 +19,13 @@ const InitialPortfolioValue = () => {
         console.log(err);
       }
     }
-
     fetchInitalValue();
   }, []);
 
   return (
     <div>
       <h3>Initial Value:</h3>
-      <h4>{initalValue} $</h4>
+      <h4>${initialValue.toFixed(2)}</h4>
     </div>
   )
 }

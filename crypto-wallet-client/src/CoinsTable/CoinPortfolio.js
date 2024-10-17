@@ -1,14 +1,12 @@
 import React from 'react'
 import CoinsTable from './CoinsTable';
-import PortfolioRefresh from '../LoadedPortfolio/PortfolioRefresh/PortfolioRefresh'
 
-const CoinPortfolio = ({ coins, fetchCoins }) => {
+const CoinPortfolio = ({ coins }) => {
   const hasApiCalculations = true;
 
   return (
     <>
-      <PortfolioRefresh fetchCoins={fetchCoins} />
-      <CoinsTable coins={coins} tableCaption={'Your Owned Coins'} hasApiCalculations={hasApiCalculations} />
+      <CoinsTable coins={coins} tableCaption={'Your Positions'} hasApiCalculations={hasApiCalculations} />
     </>
   )
 }

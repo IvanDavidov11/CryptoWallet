@@ -1,9 +1,10 @@
 import React from 'react'
 
-const SendGoodCoinsButton = ({ goodCoins, onFileUpload }) => {
+const SendGoodCoinsButton = ({ goodCoins, onFileUpload, setIsLoading }) => {
     const uploadSafe_ApiUrl = "https://localhost:7038/api/coins/upload-safe";
     const sendGoodCoins = async () => {
         try {
+            setIsLoading(false)
             const response = await fetch(uploadSafe_ApiUrl, {
                 method: 'POST',
                 headers: {
@@ -23,6 +24,10 @@ const SendGoodCoinsButton = ({ goodCoins, onFileUpload }) => {
         } catch (err) {
             console.error("An error occurred while sending good coins:", err);
         }
+        finally {
+            setIsLoading(false)
+        }
+
     };
 
     return (

@@ -1,17 +1,16 @@
 import React from 'react'
-import Upload from './Upload'
-import EmptyPortfolioHeader from './EmptyPortfolioHeader'
 import BadUpload from './BadUpload'
 import BadUploadHeader from './BadUploadHeader'
 import { useState } from 'react'
+import FileUpload from './FileUpload'
 
-const EmptyPortfolio = ({ onFileUpload }) => {
+const EmptyPortfolio = ({ onFileUpload, setIsLoading, isLoading }) => {
   const [uploadFormatFailed, setUploadFormatFailed] = useState(false);
   const [goodCoins, setGoodCoins] = useState([]);
   const [badCoins, setBadCoins] = useState([]);
 
   return (
-    <div>
+    <div className='emptyPortfolio'>
       {uploadFormatFailed ? (
         <>
           <BadUploadHeader />
@@ -23,22 +22,25 @@ const EmptyPortfolio = ({ onFileUpload }) => {
             onFileUpload={onFileUpload}
             setUploadFormatFailed={setUploadFormatFailed}
           />
-          <Upload
-            uploadCaption={"Re-upload your crypto portfolio file with fixed formatting or names (.txt, .csv)"}
+          <FileUpload
+            uploadCaption={"File isn't formatted correctly. Please re-upload."}
             onFileUpload={onFileUpload}
             setUploadFormatFailed={setUploadFormatFailed}
             setBadCoins={setBadCoins}
             setGoodCoins={setGoodCoins}
+            setIsLoading={setIsLoading}
+            isLoading={isLoading}
           />
         </>) : (
         <>
-          <EmptyPortfolioHeader />
-          <Upload
-            uploadCaption={"Upload your crypto portfolio file (.txt, .csv)"}
+          <FileUpload
+            uploadCaption={"Want to calculate your crypto portfolio value?"}
             onFileUpload={onFileUpload}
             setUploadFormatFailed={setUploadFormatFailed}
             setBadCoins={setBadCoins}
             setGoodCoins={setGoodCoins}
+            setIsLoading={setIsLoading}
+            isLoading={isLoading}
           />
         </>)}
 

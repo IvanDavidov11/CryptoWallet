@@ -3,7 +3,7 @@ import CoinTable from '../LoadedPortfolio/CoinPortfolio/CoinTable'
 import SendGoodCoinsButton from './SendGoodCoinsButton'
 
 
-const BadUpload = ({ goodCoins, badCoins, onFileUpload}) => {
+const BadUpload = ({ goodCoins, badCoins, onFileUpload, setIsLoading }) => {
   const hasApiCalculations = false;
 
   return (
@@ -13,13 +13,16 @@ const BadUpload = ({ goodCoins, badCoins, onFileUpload}) => {
         tableCaption={'Bad Coins (TEMP)'}
         hasApiCalculations={hasApiCalculations}
       />
-
       <CoinTable
         coins={goodCoins}
         tableCaption={'Good Coins (TEMP)'}
         hasApiCalculations={hasApiCalculations}
       />
-      <SendGoodCoinsButton goodCoins={goodCoins} onFileUpload={onFileUpload} />
+      <SendGoodCoinsButton
+      goodCoins={goodCoins}
+      onFileUpload={onFileUpload}
+      setIsLoading={setIsLoading}
+      />
     </>
   )
 }

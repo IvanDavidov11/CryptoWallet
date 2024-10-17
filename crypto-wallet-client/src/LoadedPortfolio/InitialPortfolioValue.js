@@ -26,7 +26,7 @@ const InitialPortfolioValue = () => {
   return (
     <div>
       <h3>Initial Value:</h3>
-      <h4>{initalValue}</h4>
+      <h4>{initalValue} $</h4>
     </div>
   )
 }

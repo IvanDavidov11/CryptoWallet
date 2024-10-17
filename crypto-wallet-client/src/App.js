@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import EmptyPortfolio from './EmptyPortfolio/EmptyPortfolio';
 import LoadedPortfolio from './LoadedPortfolio/LoadedPortfolio';
+import SpinnerLoader from './SpinnerLoader';
 
 function App() {
   const main_ApiUrl = "https://localhost:7038/api/coins";
@@ -26,6 +27,7 @@ function App() {
 
   const fetchCoins = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch(main_ApiUrl);
 
       if (!response.ok) throw Error('Did not receive expected data');
@@ -44,6 +46,7 @@ function App() {
 
   const checkIfHasCoins = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch(hasCoins_ApiUrl);
 
       if (!response.ok) throw Error('Did not receive expected data');
@@ -61,12 +64,23 @@ function App() {
   }
 
   return (
-    <div className="app">
-      {!hasCoins ? (
-        <EmptyPortfolio onFileUpload={handleFileUpload} />
-      ) : (
-        <LoadedPortfolio coins={coins} setFileUploaded={setFileUploaded} fetchCoins={fetchCoins}  checkIfHasCoins={checkIfHasCoins}/>
-      )}
+    <div className='app'>
+      <div className='centered-content'>
+
+        {!hasCoins ? (
+          <EmptyPortfolio
+            onFileUpload={handleFileUpload}
+            setIsLoading={setIsLoading}
+            isLoading={isLoading}
+          />
+        ) : (
+          <LoadedPortfolio
+            coins={coins}
+            setFileUploaded={setFileUploaded}
+            fetchCoins={fetchCoins}
+            checkIfHasCoins={checkIfHasCoins} />
+        )}
+      </div>
     </div>
   );
 }

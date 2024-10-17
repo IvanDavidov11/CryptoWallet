@@ -26,7 +26,7 @@ const CurrentPortfolioValue = () => {
   return (
     <div>
       <h3>Current Value:</h3>
-      <h4>{currentValue}</h4>
+      <h4>{currentValue} $</h4>
     </div>
   )
 }

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { TableDemo } from '../CoinsTable/CoinTable';
 
 const CurrentPortfolioValue = () => {
   const calculateCurrent_ApiUrl = "https://localhost:7038/api/calc/current";
@@ -26,7 +25,6 @@ const CurrentPortfolioValue = () => {
 
   return (
     <div>
-      <TableDemo/>
       <h3>Current Value:</h3>
       <h4>{currentValue} $</h4>
     </div>

@@ -1,7 +1,7 @@
 import React from 'react'
 import CoinRow from './CoinRow'
 
-const CoinTable = ({ coins, tableCaption, hasApiCalculations }) => {
+const CoinsTable = ({ coins, tableCaption, hasApiCalculations }) => {
     return (
         <div className='table_component'>
             <table>
@@ -32,4 +32,4 @@ const CoinTable = ({ coins, tableCaption, hasApiCalculations }) => {
     )
 }
 
-export default CoinTable
+export default CoinsTable

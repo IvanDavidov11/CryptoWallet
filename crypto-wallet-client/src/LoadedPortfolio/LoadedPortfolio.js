@@ -1,5 +1,5 @@
 import React from 'react'
-import CoinPortfolio from './CoinPortfolio/CoinPortfolio'
+import CoinPortfolio from '../CoinsTable/CoinPortfolio'
 import DeletePortfolio from './DeletePortfolio'
 import InitialPortfolioValue from './InitialPortfolioValue'
 import CurrentPortfolioValue from './CurrentPortfolioValue'

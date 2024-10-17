@@ -1,5 +1,5 @@
 import React from 'react'
-import CoinTable from '../LoadedPortfolio/CoinPortfolio/CoinTable'
+import CoinsTable from '../CoinsTable/CoinsTable';
 import SendGoodCoinsButton from './SendGoodCoinsButton'
 
 
@@ -8,12 +8,12 @@ const BadUpload = ({ goodCoins, badCoins, onFileUpload, setIsLoading }) => {
 
   return (
     <>
-      <CoinTable
+      <CoinsTable
         coins={badCoins}
         tableCaption={'Bad Coins (TEMP)'}
         hasApiCalculations={hasApiCalculations}
       />
-      <CoinTable
+      <CoinsTable
         coins={goodCoins}
         tableCaption={'Good Coins (TEMP)'}
         hasApiCalculations={hasApiCalculations}

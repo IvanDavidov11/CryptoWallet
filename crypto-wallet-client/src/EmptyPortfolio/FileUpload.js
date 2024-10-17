@@ -16,11 +16,11 @@ const FileUpload = ({ uploadCaption, onFileUpload, setUploadFormatFailed, setBad
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (file) {
-            setIsLoading(true);
             const formData = new FormData();
             formData.append('file', file);
 
             try {
+                setIsLoading(true);
                 const response = await fetch(upload_ApiUrl, {
                     method: 'POST',
                     body: formData,
@@ -71,11 +71,12 @@ const FileUpload = ({ uploadCaption, onFileUpload, setUploadFormatFailed, setBad
                 onDragOver={handleDragOver}
             >
                 {isLoading ? (
-                    <SpinnerLoader /> // Replace with your loading spinner component
+                    <SpinnerLoader />
                 ) : (
                     <>
                         <label htmlFor="file-upload" className="drag-drop-text">
-                            Drag & Drop <br /> or <a href="#" onClick={() => document.getElementById('file-upload').click()}>browse your file</a>
+                            <strong>Drag & Drop</strong> <br /> or
+                            <a href="#" onClick={() => document.getElementById('file-upload').click()}><strong> browse</strong></a> your file
                         </label>
                         <input
                             type="file"

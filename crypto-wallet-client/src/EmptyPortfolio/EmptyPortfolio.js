@@ -21,6 +21,7 @@ const EmptyPortfolio = ({ onFileUpload, setIsLoading, isLoading }) => {
             setBadCoins={setBadCoins}
             onFileUpload={onFileUpload}
             setUploadFormatFailed={setUploadFormatFailed}
+            setIsLoading={setIsLoading}
           />
           <FileUpload
             uploadCaption={"File isn't formatted correctly. Please re-upload."}

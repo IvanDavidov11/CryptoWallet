@@ -9,7 +9,7 @@ const CoinRow = ({ coin, hasApiCalculations }) => {
             {hasApiCalculations && (
                 <>
                     <td>{coin.currentPrice} $</td>
-                    <td>{coin.percentageChange} $</td>
+                    <td>{coin.percentageChange}</td>
                 </>
             )}
         </tr>

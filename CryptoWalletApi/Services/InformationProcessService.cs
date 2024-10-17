@@ -2,6 +2,7 @@
 using CryptoWalletApi.Data.DbModels;
 using CryptoWalletApi.DataTransferObjects;
 using CryptoWalletApi.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace CryptoWalletApi.Services
 {
@@ -201,6 +202,19 @@ namespace CryptoWalletApi.Services
             return currentValue;
         }
 
+        public string CalculatePercentageChangeOfPortfolio(decimal currentPortfolioValue, ICollection<CoinDatabaseModel> allCoins)
+        {
+            _logger.LogInformation("Calculating portfolio percentage change...");
+            decimal initialPortfolioValue = CalculateInitialPortfolioValue(allCoins);
+
+            string changeSymbol = initialPortfolioValue < currentPortfolioValue ? "+" : string.Empty; // if initial price is less than current price, percentage change is increase
+            string percentageChange = $"{changeSymbol}{((currentPortfolioValue - initialPortfolioValue) / initialPortfolioValue) * 100:f2}%";
+
+
+            _logger.LogInformation($"Calculation completed, percentage change is: {percentageChange}");
+            return percentageChange;
+        }
+
         public async Task<Dictionary<int, decimal>> FetchCurrentCoinPricesAsync(IEnumerable<CoinDatabaseModel> coins)
         {
             _logger.LogInformation("Fetching current prices of coins...");
@@ -216,7 +230,7 @@ namespace CryptoWalletApi.Services
             foreach (var coinDTO in coinDTOs)
             {
                 _logger.LogInformation("Attempting to match coin infromation from CoinLoreApi to CoinDatabaseModel...");
-                var matchedCoin = coins.FirstOrDefault(coin => coin.CoinLoreId.Equals(coinDTO.Id));
+                var matchedCoin = coins.FirstOrDefault(coin => coin.CoinLoreId.Equals(coinDTO.Id) && !coinPrices.ContainsKey(coin.Id));
 
                 if (matchedCoin is null)
                 {
@@ -293,7 +307,7 @@ namespace CryptoWalletApi.Services
             int processedCount = 0;
             foreach (var coinDTO in coinDTOs)
             {
-                CoinViewModel? matchedCoin = coins.FirstOrDefault(coin => coin.CoinLoreId.Equals(coinDTO.Id));
+                CoinViewModel? matchedCoin = coins.FirstOrDefault(coin => coin.CoinLoreId.Equals(coinDTO.Id) && !coinPrices.ContainsKey(coin.Id));
 
                 if (matchedCoin is null)
                 {

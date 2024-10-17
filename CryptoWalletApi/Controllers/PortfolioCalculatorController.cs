@@ -1,4 +1,5 @@
 ﻿using CryptoWalletApi.Data;
+using CryptoWalletApi.DataTransferObjects;
 using CryptoWalletApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,10 +38,14 @@ namespace CryptoWalletApi.Controllers
             _logger.LogInformation($"Entering CalculateCurrentPortfolioValue method");
 
             var coins = await _dbManager.GetOwnedCoinsAsync();
+            
             decimal currentValue = await _informationProcessService.CalculateCurrentPortfolioValueAsync(coins);
+            string percentageChange = _informationProcessService.CalculatePercentageChangeOfPortfolio(currentValue, coins);
+
+            string combinedValue = $"{currentValue:f2} {percentageChange}";
 
             _logger.LogInformation("Sending current portfolio value to front-end.");
-            return Ok(currentValue);
+            return Ok(combinedValue);
         }
     }
 }

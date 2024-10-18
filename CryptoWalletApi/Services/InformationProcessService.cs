@@ -206,10 +206,7 @@ namespace CryptoWalletApi.Services
         {
             _logger.LogInformation("Calculating portfolio percentage change...");
             decimal initialPortfolioValue = CalculateInitialPortfolioValue(allCoins);
-
-            string changeSymbol = initialPortfolioValue < currentPortfolioValue ? "+" : string.Empty; // if initial price is less than current price, percentage change is increase
-            string percentageChange = $"{changeSymbol}{((currentPortfolioValue - initialPortfolioValue) / initialPortfolioValue) * 100:f2}%";
-
+            string percentageChange = $"{((currentPortfolioValue - initialPortfolioValue) / initialPortfolioValue) * 100:f2}%";
 
             _logger.LogInformation($"Calculation completed, percentage change is: {percentageChange}");
             return percentageChange;

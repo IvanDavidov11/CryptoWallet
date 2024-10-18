@@ -42,7 +42,7 @@ namespace CryptoWalletApi.Controllers
             decimal currentValue = await _informationProcessService.CalculateCurrentPortfolioValueAsync(coins);
             string percentageChange = _informationProcessService.CalculatePercentageChangeOfPortfolio(currentValue, coins);
 
-            string combinedValue = $"{currentValue:f2} {percentageChange}";
+            string combinedValue = $"{currentValue:f2}   {percentageChange}";
 
             _logger.LogInformation("Sending current portfolio value to front-end.");
             return Ok(combinedValue);

@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import CoinRow from './CoinRow'
+import DeletePortfolio from '../LoadedPortfolio/DeletePortfolio';
 
-const CoinsTable = ({ coins, tableCaption }) => {
+const CoinsTable = ({ coins, tableCaption, setFileUploaded, checkIfHasCoins }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 6;
 
@@ -41,14 +42,22 @@ const CoinsTable = ({ coins, tableCaption }) => {
                     {currentCoins.map((coin, index) =>
                         <CoinRow key={coin.id !== 0 ? coin.id : `${coin.name}-${index}`}
                             coin={coin}
+                            index={index}
                         />
                     )}
                 </tbody>
             </table>
-            <div className="pagination">
-                <button onClick={handlePrevPage} disabled={currentPage === 1}>Prev</button>
-                <span> Page {currentPage} of {totalPages} </span>
-                <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+            <div>
+                <div className="pagination">
+                    <button onClick={handlePrevPage} disabled={currentPage === 1}>Prev</button>
+                    <span> Page {currentPage} of {totalPages} </span>
+                    <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+                </div>
+                <DeletePortfolio
+                    className='deletePortfolio'
+                    setFileUploaded={setFileUploaded}
+                    checkIfHasCoins={checkIfHasCoins}
+                />
             </div>
         </div>
     );

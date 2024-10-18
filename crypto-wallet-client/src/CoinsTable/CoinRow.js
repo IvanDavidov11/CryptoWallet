@@ -1,11 +1,11 @@
 import React from 'react'
 
-const CoinRow = ({ coin }) => {
+const CoinRow = ({ coin, index }) => {
     const valueClass = coin.percentageChange?.toString().includes('-') ? 'value-negative' : 'value-positive';
 
     return (
         <tr className="coinTableRow">
-            <td>{coin.id}</td>
+            <td>{index + 1}</td>
             <td>{coin.name}</td>
             <td>{coin.amount}</td>
             <td>${coin.buyPrice}</td>

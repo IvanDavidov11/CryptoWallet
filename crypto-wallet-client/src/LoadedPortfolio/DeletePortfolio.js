@@ -18,9 +18,9 @@ const DeletePortfolio = ({ setFileUploaded, checkIfHasCoins }) => {
     };
 
     return (
-        <div>
-            <button onClick={deletePortfolio}>Delete Portfolio</button>
-        </div>
+        <>
+            <button className='deletePortfolioButton' onClick={deletePortfolio}>Delete Portfolio</button>
+        </>
     )
 }
 

@@ -23,9 +23,9 @@ const InitialPortfolioValue = () => {
   }, []);
 
   return (
-    <div>
-      <h3>Initial Value:</h3>
-      <h4>${initialValue.toFixed(2)}</h4>
+    <div className='portfolio-infobox'>
+      <p>Initial Value:</p>
+      <p>${initialValue.toFixed(2)}</p>
     </div>
   )
 }

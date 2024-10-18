@@ -44,7 +44,7 @@ const PortfolioRefreshSettings = ({ fetchCoins, setRefreshInterval, refreshInter
       >
         {refreshOptions.map((option) => (
           <option key={option} value={option}>
-            {option} minutes
+            {option} Minutes
           </option>
         ))}
       </select>

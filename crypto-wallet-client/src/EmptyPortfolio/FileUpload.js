@@ -59,11 +59,7 @@ const FileUpload = ({ uploadCaption, onFileUpload, setUploadFormatFailed, setBad
     };
 
     return (
-        <div>
-            <h1 className="title">{uploadCaption}</h1>
-            <p className="subtitle">
-                Simply drag and drop your file to instantly calculate the value of your crypto portfolio.
-            </p>
+        <>
             <form
                 className="upload-box"
                 onSubmit={handleSubmit}
@@ -95,10 +91,10 @@ const FileUpload = ({ uploadCaption, onFileUpload, setUploadFormatFailed, setBad
                 )}
             </form>
 
-            <div className="file-types">
+            <p className="file-types">
                 Plain text (.txt, .csv) <br />
-            </div>
-        </div>
+            </p>
+        </>
     );
 }
 

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import EmptyPortfolio from './EmptyPortfolio/EmptyPortfolio';
 import LoadedPortfolio from './LoadedPortfolio/LoadedPortfolio';
-import SpinnerLoader from './SpinnerLoader';
 
 function App() {
   const main_ApiUrl = "https://localhost:7038/api/coins";
@@ -65,8 +64,6 @@ function App() {
 
   return (
     <div className='app'>
-      <div className='centered-content'>
-
         {!hasCoins ? (
           <EmptyPortfolio
             onFileUpload={handleFileUpload}
@@ -80,7 +77,6 @@ function App() {
             fetchCoins={fetchCoins}
             checkIfHasCoins={checkIfHasCoins} />
         )}
-      </div>
     </div>
   );
 }

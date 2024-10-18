@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import LoadedPortfolioHeader from './LoadedPortfolioHeader'
 import CoinPortfolio from '../CoinsTable/CoinPortfolio'
-import DeletePortfolio from './DeletePortfolio'
 import InitialPortfolioValue from './InitialPortfolioValue'
 import CurrentPortfolioValue from './CurrentPortfolioValue'
 import PortfolioRefresh from './PortfolioRefresh/PortfolioRefresh';
@@ -27,22 +26,14 @@ const LoadedPortfolio = ({ coins, setFileUploaded, fetchCoins, checkIfHasCoins }
     return (
         <div className='loadedPortfolio'>
             <LoadedPortfolioHeader fetchCoins={fetchCoins} />
-            <PortfolioRefresh
-                fetchCoins={fetchCoins}
-                fetchCurrentValue={fetchCurrentValue}
-            />
-            <InitialPortfolioValue />
-            <CurrentPortfolioValue
-                currentValue={currentValue}
-                fetchCurrentValue={fetchCurrentValue}
-            />
-            <CoinPortfolio coins={coins} />
-            <DeletePortfolio
-                setFileUploaded={setFileUploaded}
-                checkIfHasCoins={checkIfHasCoins}
-            />
+            <PortfolioRefresh fetchCoins={fetchCoins} fetchCurrentValue={fetchCurrentValue} />
+            <div className='portfolio-infoboxes'>
+                <InitialPortfolioValue />
+                <CurrentPortfolioValue currentValue={currentValue} fetchCurrentValue={fetchCurrentValue} />
+            </div>
+            <CoinPortfolio coins={coins} setFileUploaded={setFileUploaded} checkIfHasCoins={checkIfHasCoins} />
         </div>
-    )
+    );
 }
 
 export default LoadedPortfolio

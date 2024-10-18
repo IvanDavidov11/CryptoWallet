@@ -3,6 +3,7 @@ import BadUpload from './BadUpload'
 import BadUploadHeader from './BadUploadHeader'
 import { useState } from 'react'
 import FileUpload from './FileUpload'
+import InitialUploadHeader from './InitialUploadHeader'
 
 const EmptyPortfolio = ({ onFileUpload, setIsLoading, isLoading }) => {
   const [uploadFormatFailed, setUploadFormatFailed] = useState(false);
@@ -10,7 +11,7 @@ const EmptyPortfolio = ({ onFileUpload, setIsLoading, isLoading }) => {
   const [badCoins, setBadCoins] = useState([]);
 
   return (
-    <div className='emptyPortfolio'>
+    <div>
       {uploadFormatFailed ? (
         <>
           <BadUploadHeader />
@@ -34,8 +35,8 @@ const EmptyPortfolio = ({ onFileUpload, setIsLoading, isLoading }) => {
           />
         </>) : (
         <>
+        <InitialUploadHeader />
           <FileUpload
-            uploadCaption={"Want to calculate your crypto portfolio value?"}
             onFileUpload={onFileUpload}
             setUploadFormatFailed={setUploadFormatFailed}
             setBadCoins={setBadCoins}
@@ -44,7 +45,6 @@ const EmptyPortfolio = ({ onFileUpload, setIsLoading, isLoading }) => {
             isLoading={isLoading}
           />
         </>)}
-
     </div>
   )
 }

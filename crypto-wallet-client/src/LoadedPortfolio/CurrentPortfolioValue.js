@@ -9,9 +9,9 @@ const CurrentPortfolioValue = ({ currentValue, fetchCurrentValue }) => {
   }, []);
 
   return (
-    <div className='portfolio'>
-      <h3>Current Value:</h3>
-      <h4 className={valueClass}>${currentValue}</h4>
+    <div className='portfolio-infobox'>
+      <p>Current Value:</p>
+      <p className={valueClass}>${currentValue}</p>
     </div>
   )
 }

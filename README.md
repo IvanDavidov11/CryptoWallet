@@ -4,7 +4,7 @@ It allows users to upload a file containing their crypto holdings, including det
 The app then fetches real-time data using the CoinLore API to calculate the current portfolio value and track percentage changes in the coin prices over time.
 
 Tech stack:
-Back-end: ASP.NET Core
-Front-end: React (SPA)
-Database: EntityFramework Core for database interactions.
-Logging: Serilog for file-based logging.
+-Back-end: ASP.NET Core
+-Front-end: React (SPA)
+-Database: EntityFramework Core for database interactions.
+-Logging: Serilog for file-based logging.

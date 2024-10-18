@@ -26,12 +26,19 @@ const CoinsTable = ({ coins, tableCaption, setFileUploaded, checkIfHasCoins }) =
 
     return (
         <div className='table_component'>
+            <div className='table_component_header'>
+                <p>{tableCaption}</p>
+                <DeletePortfolio
+                    className='deletePortfolio'
+                    setFileUploaded={setFileUploaded}
+                    checkIfHasCoins={checkIfHasCoins}
+                />
+            </div>
             <table>
-                <caption>{tableCaption}</caption>
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Coin Name</th>
+                        <th>Coin</th>
                         <th>Amount</th>
                         <th>Bought For</th>
                         <th>Current Price</th>
@@ -42,7 +49,7 @@ const CoinsTable = ({ coins, tableCaption, setFileUploaded, checkIfHasCoins }) =
                     {currentCoins.map((coin, index) =>
                         <CoinRow key={coin.id !== 0 ? coin.id : `${coin.name}-${index}`}
                             coin={coin}
-                            index={index}
+                            index={indexOfFirstCoin + index}
                         />
                     )}
                 </tbody>
@@ -53,11 +60,7 @@ const CoinsTable = ({ coins, tableCaption, setFileUploaded, checkIfHasCoins }) =
                     <span> Page {currentPage} of {totalPages} </span>
                     <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
                 </div>
-                <DeletePortfolio
-                    className='deletePortfolio'
-                    setFileUploaded={setFileUploaded}
-                    checkIfHasCoins={checkIfHasCoins}
-                />
+
             </div>
         </div>
     );

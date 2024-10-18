@@ -75,11 +75,15 @@ h1 {
 }
 
 .refreshPortfolioButtons>.refreshPortfolioButton {
-  padding: 5px 15px;
+  padding: 8.5px 40px;
   border-radius: 12px;
   background-color: #1A5BBC;
   color: white;
   cursor: pointer;
+}
+
+.refreshPortfolioButton:hover{
+  background-color: #3a7bc0;
 }
 
 /*=================*/
@@ -93,14 +97,15 @@ h1 {
 .portfolio-infobox {
   background-color: #161616;
   color: white;
-  padding: 15px 30px;
+  padding: 15px 15px;
+  margin: 0px 15px;
   border: 1px #373737 solid;
   border-radius: 12px;
   text-align: center;
   font-size: 14px;
   font-weight: 300 !important;
   margin: 10px;
-  min-width: 200px;
+  min-width: 240px;
 }
 
 /*=================*/
@@ -123,13 +128,15 @@ h1 {
   text-align: center;
 }
 
-.table_component caption {
+.table_component_header {
+  display: flex;
   caption-side: top;
   text-align: left;
   margin-bottom: 10px;
   margin-left: 10px;
   font-size: 30px;
   font-weight: bold;
+  justify-content: space-between;
 }
 
 .table_component th {
@@ -148,6 +155,7 @@ h1 {
   font-weight: 300;
   text-align: left;
   padding-left: 40px;
+  max-height: 50px;
 }
 
 .table_content_right {

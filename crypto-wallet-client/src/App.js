@@ -36,7 +36,7 @@ function App() {
       if (!response.ok) throw Error('Did not receive expected data');
 
       const listCoins = await response.json();
-      console.log(`FetchCoins executed: ${listCoins}`);
+      console.log(`FetchCoins executed`);
       setCoins(listCoins);
     }
     catch (err) {

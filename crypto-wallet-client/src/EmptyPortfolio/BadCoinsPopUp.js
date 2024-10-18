@@ -16,8 +16,8 @@ const BadCoinsPopUp = ({ openPopUp, setOpenPopUp, badCoins }) => {
         onRequestClose={toggleModal}
         overlayClassName="Overlay"
       >
-        <h1>Warning: {badCoins.length === 1 ? (`${badCoins.length} Coin`) : (`${badCoins.length} Coins`)} could not be processed.</h1>
-        <p>Format of coins has to be: NUMBER_OF_COINS|COIN_NAME|BUY_PRICE. If Format is correct, check the coins' name.</p>
+        <h1>Error: {badCoins.length === 1 ? (`${badCoins.length} Coin`) : (`${badCoins.length} Coins`)} could not be processed.</h1>
+        <p>Format of coins has to be: NUMBER_OF_COINS|COIN_NAME|BUY_PRICE.</p>
         {badCoins && badCoins.length > 0 ? (
           <ul>
             {badCoins.map((coin) => (
@@ -29,7 +29,7 @@ const BadCoinsPopUp = ({ openPopUp, setOpenPopUp, badCoins }) => {
         ) : (
           <p>No bad coins found.</p>
         )}
-        <button onClick={toggleModal}>Close</button>
+        <button onClick={toggleModal}>Dismiss</button>
       </Modal>
     </div>
   );

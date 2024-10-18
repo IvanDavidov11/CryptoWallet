@@ -5,6 +5,9 @@ const InitialPortfolioValue = () => {
   const calculateInitial_ApiUrl = "https://localhost:7038/api/calc/initial";
   const [initialValue, setInitialValue] = useState(0);
 
+  const formattedInitialValue = initialValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+
   useEffect(() => {
     const fetchInitalValue = async () => {
       try {
@@ -25,7 +28,7 @@ const InitialPortfolioValue = () => {
   return (
     <div className='portfolio-infobox'>
       <p>Initial Value:</p>
-      <p><strong>${initialValue.toFixed(2)}</strong></p>
+      <p><strong>${formattedInitialValue}</strong></p>
     </div>
   )
 }

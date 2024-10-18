@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 
 const PortfolioRefreshSettings = ({ fetchCoins, setRefreshInterval, refreshInterval }) => {
   const refreshOptions = [1, 2, 3, 5, 10, 15, 30, 45, 60]; // Interval values in minutes

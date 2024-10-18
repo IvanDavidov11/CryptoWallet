@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import EmptyPortfolio from './EmptyPortfolio/EmptyPortfolio';
 import LoadedPortfolio from './LoadedPortfolio/LoadedPortfolio';
+import BadCoinsPopUp from './EmptyPortfolio/BadCoinsPopUp';
 
 function App() {
   const main_ApiUrl = "https://localhost:7038/api/coins";
@@ -9,6 +10,9 @@ function App() {
   const [coins, setCoins] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fileUploaded, setFileUploaded] = useState(false);
+
+  const [uploadFormatFailed, setUploadFormatFailed] = useState(false);
+  const [badCoins, setBadCoins] = useState([]);
 
   useEffect(() => {
     if (hasCoins) {
@@ -64,19 +68,26 @@ function App() {
 
   return (
     <div className='app'>
-        {!hasCoins ? (
-          <EmptyPortfolio
-            onFileUpload={handleFileUpload}
-            setIsLoading={setIsLoading}
-            isLoading={isLoading}
-          />
-        ) : (
-          <LoadedPortfolio
-            coins={coins}
-            setFileUploaded={setFileUploaded}
-            fetchCoins={fetchCoins}
-            checkIfHasCoins={checkIfHasCoins} />
-        )}
+      {!hasCoins ? (
+        <EmptyPortfolio
+          onFileUpload={handleFileUpload}
+          setIsLoading={setIsLoading}
+          isLoading={isLoading}
+          setUploadFormatFailed={setUploadFormatFailed}
+          setBadCoins={setBadCoins}
+        />
+      ) : (
+        <LoadedPortfolio
+          coins={coins}
+          setFileUploaded={setFileUploaded}
+          fetchCoins={fetchCoins}
+          checkIfHasCoins={checkIfHasCoins} />
+      )}
+      <BadCoinsPopUp
+        openPopUp={uploadFormatFailed}
+        setOpenPopUp={setUploadFormatFailed}
+        badCoins={badCoins}
+      />
     </div>
   );
 }

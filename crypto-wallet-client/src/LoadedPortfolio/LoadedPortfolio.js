@@ -5,7 +5,7 @@ import InitialPortfolioValue from './InitialPortfolioValue'
 import CurrentPortfolioValue from './CurrentPortfolioValue'
 import PortfolioRefresh from './PortfolioRefresh/PortfolioRefresh';
 
-const LoadedPortfolio = ({ coins, setFileUploaded, fetchCoins, checkIfHasCoins }) => {
+const LoadedPortfolio = ({ coins, setFileUploaded, fetchCoins, checkIfHasCoins}) => {
     const calculateCurrent_ApiUrl = "https://localhost:7038/api/calc/current";
     const [currentValue, setCurrentValue] = useState(0);
 

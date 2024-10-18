@@ -3,7 +3,7 @@ import React from 'react'
 const SpinnerLoader = () => {
     return (
     <div>
-      <img src="./sp.svg" />
+      <img alt='LOADING' src="./sp.svg" />
     </div>
   )
 }

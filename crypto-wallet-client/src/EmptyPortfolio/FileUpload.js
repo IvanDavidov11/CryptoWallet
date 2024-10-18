@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import SpinnerLoader from '../SpinnerLoader';
 
-const FileUpload = ({ uploadCaption, onFileUpload, setUploadFormatFailed, setBadCoins, setGoodCoins, setIsLoading, isLoading }) => {
+const FileUpload = ({ onFileUpload, setUploadFormatFailed, setBadCoins, setIsLoading, isLoading }) => {
     const [file, setFile] = useState(null);
     const upload_ApiUrl = "https://localhost:7038/api/coins/upload";
+    const uploadSafe_ApiUrl = "https://localhost:7038/api/coins/upload-safe";
+    const [goodCoins, setGoodCoins] = useState([]);
 
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
@@ -33,7 +35,6 @@ const FileUpload = ({ uploadCaption, onFileUpload, setUploadFormatFailed, setBad
                     setBadCoins(result.badCoins);
                     setGoodCoins(result.goodCoins);
                     setUploadFormatFailed(true);
-                    console.log(`${response.status} - ${result.badCoins}`);
                 }
                 else if (response.ok) {
                     const result = await response.text();
@@ -49,6 +50,35 @@ const FileUpload = ({ uploadCaption, onFileUpload, setUploadFormatFailed, setBad
             }
         }
     };
+
+    useEffect(() => {
+        const sendGoodCoins = async () => {
+            try {
+                setIsLoading(true);
+                const response = await fetch(uploadSafe_ApiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(goodCoins),
+                });
+    
+                if (response.ok) {
+                    const result = await response.text();
+                    console.log(result);
+                    onFileUpload();
+                } else {
+                    const error = await response.text();
+                    console.error(error);
+                }
+            } catch (err) {
+                console.error("An error occurred while sending good coins:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        if (goodCoins && goodCoins.length > 0) sendGoodCoins()
+    }, [goodCoins]);
 
     const handleDrop = (event) => {
         event.preventDefault();

@@ -17,7 +17,7 @@ const BadCoinsPopUp = ({ openPopUp, setOpenPopUp, badCoins }) => {
         overlayClassName="Overlay"
       >
         <h1>Warning: {badCoins.length === 1 ? (`${badCoins.length} Coin`) : (`${badCoins.length} Coins`)} could not be processed.</h1>
-        <p>Format of coins has to be NUMBER_OF_COINS|COIN_NAME|BUY_PRICE. If Format is correct, please check the coins' name.</p>
+        <p>Format of coins has to be: NUMBER_OF_COINS|COIN_NAME|BUY_PRICE. If Format is correct, check the coins' name.</p>
         {badCoins && badCoins.length > 0 ? (
           <ul>
             {badCoins.map((coin) => (

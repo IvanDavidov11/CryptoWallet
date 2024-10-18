@@ -3,7 +3,6 @@ import CoinsTable from './CoinsTable';
 import DeletePortfolio from '../LoadedPortfolio/DeletePortfolio';
 
 const CoinPortfolio = ({ coins, setFileUploaded, checkIfHasCoins }) => {
-  const hasApiCalculations = true;
 
   return (
     <>
@@ -11,7 +10,7 @@ const CoinPortfolio = ({ coins, setFileUploaded, checkIfHasCoins }) => {
                 setFileUploaded={setFileUploaded}
                 checkIfHasCoins={checkIfHasCoins}
             />
-      <CoinsTable coins={coins} tableCaption={'Your Positions'} hasApiCalculations={hasApiCalculations} />
+      <CoinsTable coins={coins} tableCaption={'Your Positions'}/>
     </>
   )
 }

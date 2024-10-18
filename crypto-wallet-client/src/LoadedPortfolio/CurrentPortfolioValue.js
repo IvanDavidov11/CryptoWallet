@@ -11,7 +11,7 @@ const CurrentPortfolioValue = ({ currentValue, fetchCurrentValue }) => {
   return (
     <div className='portfolio-infobox'>
       <p>Current Value:</p>
-      <p className={valueClass}>${currentValue}</p>
+      <p className={valueClass}><strong>${currentValue}</strong></p>
     </div>
   )
 }

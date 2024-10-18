@@ -25,7 +25,7 @@ const InitialPortfolioValue = () => {
   return (
     <div className='portfolio-infobox'>
       <p>Initial Value:</p>
-      <p>${initialValue.toFixed(2)}</p>
+      <p><strong>${initialValue.toFixed(2)}</strong></p>
     </div>
   )
 }

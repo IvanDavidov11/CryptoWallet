@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import CoinRow from './CoinRow'
 
-const CoinsTable = ({ coins, tableCaption, hasApiCalculations }) => {
+const CoinsTable = ({ coins, tableCaption }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 6;
 
@@ -29,22 +29,18 @@ const CoinsTable = ({ coins, tableCaption, hasApiCalculations }) => {
                 <caption>{tableCaption}</caption>
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Coin Name</th>
                         <th>Amount</th>
                         <th>Bought For</th>
-                        {hasApiCalculations && (
-                            <>
-                                <th>Current Price</th>
-                                <th>Change from initial price</th>
-                            </>
-                        )}
+                        <th>Current Price</th>
+                        <th>Change %</th>
                     </tr>
                 </thead>
                 <tbody>
                     {currentCoins.map((coin, index) =>
                         <CoinRow key={coin.id !== 0 ? coin.id : `${coin.name}-${index}`}
                             coin={coin}
-                            hasApiCalculations={hasApiCalculations}
                         />
                     )}
                 </tbody>
